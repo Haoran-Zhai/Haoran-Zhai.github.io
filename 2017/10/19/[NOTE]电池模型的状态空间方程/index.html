@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="电池管理系统," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="之前学习如何使用卡尔曼滤波器进行电池SoC估计的时候，跳过了一个很重要的问题——电池模型系统方程的建立。电池模型的种类有很多，最常用的还是二阶RC电路模型。通过基本的电工学知识可以很容易地建立起电路的方程，得到输出电压与输入电流激励的关系。但是在使用卡尔曼滤波器进行SoC估算的时候，我们需要建立起关于这个电路模型的状态">
+<meta name="keywords" content="电池管理系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[NOTE]电池模型的状态空间方程">
+<meta property="og:url" content="http://yoursite.com/2017/10/19/[NOTE]电池模型的状态空间方程/index.html">
+<meta property="og:site_name" content="ZHAI&#39;S">
+<meta property="og:description" content="之前学习如何使用卡尔曼滤波器进行电池SoC估计的时候，跳过了一个很重要的问题——电池模型系统方程的建立。电池模型的种类有很多，最常用的还是二阶RC电路模型。通过基本的电工学知识可以很容易地建立起电路的方程，得到输出电压与输入电流激励的关系。但是在使用卡尔曼滤波器进行SoC估算的时候，我们需要建立起关于这个电路模型的状态空间方程、并得到该方程的离散形式。 控制系统的分类———————————————">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-12-01T13:47:28.886Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[NOTE]电池模型的状态空间方程">
+<meta name="twitter:description" content="之前学习如何使用卡尔曼滤波器进行电池SoC估计的时候，跳过了一个很重要的问题——电池模型系统方程的建立。电池模型的种类有很多，最常用的还是二阶RC电路模型。通过基本的电工学知识可以很容易地建立起电路的方程，得到输出电压与输入电流激励的关系。但是在使用卡尔曼滤波器进行SoC估算的时候，我们需要建立起关于这个电路模型的状态空间方程、并得到该方程的离散形式。 控制系统的分类———————————————">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/10/19/[NOTE]电池模型的状态空间方程/"/>
+
+
+
+
+
+  <title>[NOTE]电池模型的状态空间方程 | ZHAI'S</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ZHAI'S</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/10/19/[NOTE]电池模型的状态空间方程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ZHAI">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZHAI'S">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[NOTE]电池模型的状态空间方程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-19T19:10:56+08:00">
+                2017-10-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/电池管理系统/" itemprop="url" rel="index">
+                    <span itemprop="name">电池管理系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2017/10/19/[NOTE]电池模型的状态空间方程/" class="leancloud_visitors" data-flag-title="[NOTE]电池模型的状态空间方程">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>之前学习如何使用卡尔曼滤波器进行电池SoC估计的时候，跳过了一个很重要的问题——电池模型系统方程的建立。电池模型的种类有很多，最常用的还是二阶RC电路模型。通过基本的电工学知识可以很容易地建立起电路的方程，得到输出电压与输入电流激励的关系。但是在使用卡尔曼滤波器进行SoC估算的时候，我们需要建立起关于这个电路模型的状态空间方程、并得到该方程的离散形式。</p>
+<h1 id="控制系统的分类"><a href="#控制系统的分类" class="headerlink" title="控制系统的分类"></a>控制系统的分类</h1><p>————————————————————————</p>
+<h2 id="连续系统与离散系统"><a href="#连续系统与离散系统" class="headerlink" title="连续系统与离散系统"></a>连续系统与离散系统</h2><p>控制系统可以分为连续系统和离散系统。一般研究中通过拉普拉斯变化或建立微分方程的方法，都是针对与连续控制系统。它所有变量的变化都是连续的。但是由于现今控制系统需要计算机参与计算。举个例子，当控制系统中某个变量需要通过传感器来测量时，只能是每间隔一个时间段来对传感器的数据进行采样。这样计算机处理的数据就不是一段连续的数据而是一串数据点，相应的也要将连续的系统方程进行离散化。<br><a id="more"></a><br>连续系统一般通过微分或者偏微分方程进行建模，而离散系统一般通过差分方程进行建模。求解微分方程，可以采用对微分方程进行拉普拉斯变换的方法将微分方程转换为代数方程，对代数方程求解并进行拉普拉斯反变换得到最终的微分方程的解。对于差分方程，可以通过类似的Z变换的方法求解。</p>
+<h2 id="线性与时变"><a href="#线性与时变" class="headerlink" title="线性与时变"></a>线性与时变</h2><p>对于微分方程的系数不随时间发生改变的系统，称为定常系统，反之称为时变系统。<br>一个线性系统是可以进行叠加的，也就是说：$f\left(x_1+x_2\right)=f\left(x_1\right)+f\left(x_2\right)$，故可以单独计算一部分输入导致的系统响应，再将所有部分的系统响应叠加得到全部输入导致的系统响应。非线性系统可以通过泰勒展开等方式转换为线性系统进行分析。<br>对于线性时不变系统，其响应可以表示为输入与系统单位脉冲响应的卷积。</p>
+<h1 id="线性时不变系统、卷积积分、传递函数与拉普拉斯变换"><a href="#线性时不变系统、卷积积分、传递函数与拉普拉斯变换" class="headerlink" title="线性时不变系统、卷积积分、传递函数与拉普拉斯变换"></a>线性时不变系统、卷积积分、传递函数与拉普拉斯变换</h1><p>————————————————————————</p>
+<h2 id="卷积积分"><a href="#卷积积分" class="headerlink" title="卷积积分"></a>卷积积分</h2><p>对于线性时不变系统，可以先将一般的输入分解为简单的基本信号，再运用叠加原理求出系统在各种基本信号下的响应之和。通常一般所运用的基本信号是脉冲信号和指数函数信号（线性无关，构建一个空间的基向量）。<br>脉冲信号可以用脉冲函数$\delta \left( \tau \right)$表示：<br>$$ \int_{-\infty }^{+\infty }f\left( \tau \right) \delta \left( t-\tau \right) d\tau =f\left( t\right) $$<br>相应地，输入信号$u(t)$也可以看作是这样的一串脉冲信号。叠加原理表明，只要求出系统单位脉冲响应，则系统响应可以表示为输入信号和单位响应的乘积的积分。<br>如果$h\left( t,\tau \right)$表示$\tau$时刻的输入脉冲在t时刻的响应（如果你在$\tau$时刻被打了一个力度的耳光，那t时刻你脸上的火辣程度），$u\left(\tau\right)$表示$\tau$时刻的系统输入（你在$\tau$时刻被打了几个力度的耳光），则$\tau$时刻输入脉冲的t时刻系统响应是$u\left(\tau\right)h\left( t,\tau \right)$。对$\tau$在整段时间求积分，则在t时刻的系统响应是：<br>$$ y\left(t\right)=\int_{-\infty }^{+\infty }u\left(\tau\right)h\left( t,\tau \right)d\tau $$<br>由于系统是时不变的，则在$\tau$时刻加入输入，在t时刻获得的响应只取决于输入的大小和这两个时刻之间的间隔，即$h\left( t,\tau \right)=h\left( t-\tau \right)$。故：<br>$$ y\left(t\right)=\int_{-\infty }^{+\infty }u\left(\tau\right)h\left( t-\tau \right)d\tau $$<br>或者，<br>$$ y\left(t\right)=\int_{-\infty }^{+\infty }u\left(t-\tau\right)h\left( \tau \right)d\tau $$<br>该式便是卷积积分。</p>
+<h2 id="传递函数"><a href="#传递函数" class="headerlink" title="传递函数"></a>传递函数</h2><p>根据上式，若输入的形式为指数函数，假设$u\left(t\right)=e^{st}, s=\sigma +j\omega$，则：<br>$$ y\left(t\right)=\int_{-\infty }^{+\infty }h\left( \tau \right)u\left(t-\tau\right)d\tau=\int_{-\infty }^{+\infty }h\left( \tau \right)e^{s\left(t-\tau\right)}d\tau=\int_{-\infty }^{+\infty }h\left( \tau \right)e^{st}e^{-s\tau}d\tau=\int_{-\infty }^{+\infty }h\left( \tau \right)e^{-s\tau}d\tau e^{st} $$<br>令$H\left(s\right)=\int_{-\infty }^{+\infty }h\left( \tau \right)e^{-s\tau}d\tau$, $H\left(s\right)$则为该系统的传递函数。</p>
+<h2 id="拉普拉斯变换"><a href="#拉普拉斯变换" class="headerlink" title="拉普拉斯变换"></a>拉普拉斯变换</h2><p>在此定义$f\left(t\right)$的拉普拉斯变换为：<br>$$ F\left(s\right)=\int_{-\infty }^{+\infty }f\left( \tau \right)e^{-s\tau}d\tau $$</p>
+<h2 id="卷积积分、传递函数与拉普拉斯变换的关系"><a href="#卷积积分、传递函数与拉普拉斯变换的关系" class="headerlink" title="卷积积分、传递函数与拉普拉斯变换的关系"></a>卷积积分、传递函数与拉普拉斯变换的关系</h2><p>将拉普拉斯变换应用于卷积积分的$u\left(t\right)$和$y\left(t\right)$，可得：<br>$$ Y\left(s\right)=H\left(s\right)U\left(s\right) $$<br>其中，$Y\left(s\right)$和$U\left(s\right)$分别为$y\left(t\right)$和$u\left(t\right)$的拉普拉斯变换。<br>由于单位脉冲的拉普拉斯变换为1，故系统的传递函数为系统的单位脉冲响应的拉普拉斯变换。</p>
+<h1 id="z变换与离散等价设计"><a href="#z变换与离散等价设计" class="headerlink" title="z变换与离散等价设计"></a>z变换与离散等价设计</h1><p>————————————————————————<br>z变换之于离散系统，就如同拉普拉斯变换之于连续系统。若$f\left(k\right)$为$f\left(t\right)$的采样值，则其z变换为：<br>$$ F\left(z\right)=\sum _{k=0}^{\infty }f\left( k\right) z^{-k} $$<br>$z$为前移算子，若$U\left(z\right)$为$u\left(kT\right)$的z变换，则$zU\left(z\right)$就是$u\left(kT+T\right)$的z变换。</p>
+<p>通过系统建模，建立连续的状态空间模型后，如何将连续实现转换为离散实现呢？</p>
+<h2 id="Tustin"><a href="#Tustin" class="headerlink" title="Tustin"></a>Tustin</h2><p>一种非常常用的离散等价设计方法为Tustin法。<br>假设一个$\dfrac{1}{s}$过程，即一个积分器：<br>$$ \dfrac{U\left(s\right)}{E\left(s\right)}=D\left(s\right)=\dfrac{1}{s} $$<br>则有（$T$是采样周期）:<br>$$ u\left(kT\right)=\int_{0}^{kT-T}e\left(t\right)dt+\int_{kT-T}^{kT}e\left(t\right)dt $$<br>即：$u\left(kT\right)=u\left(kT-T\right)+$最后一个周期内$e\left(t\right)$所包围的面积。<br>Tustin法是将最后一个周期内$e\left(t\right)$所包围的面积近似地用两个采样点之间所夹梯形的面积来表示，即（用$u\left(k-1\right)$代替$u\left(kT-T\right)$, $u\left(kT\right)$同样）：<br>$$ u\left(k\right)=u\left(k-1\right)+\dfrac{T}{2}\left[e\left(k-1\right)+e\left(k\right)\right] $$<br>将上式进行z变换得到：<br>$$ \dfrac{U\left(z\right)}{E\left(z\right)}=\dfrac{T}{2}\left(\dfrac{1+z^{-1}}{1-z^{-1}}\right)=\dfrac{1}{\dfrac{2}{T}\left(\dfrac{z-1}{z+1}\right)} $$<br>对于其他种类的控制器也有类似的情况，即将传递函数中的每一处$s$替换为$\dfrac{2}{T}\left(\dfrac{z-1}{z+1}\right)$便可以实现近似的离散等价设计。</p>
+<h2 id="欧拉法"><a href="#欧拉法" class="headerlink" title="欧拉法"></a>欧拉法</h2><p>Tustin法是通过采用梯形近似的方法实现离散等价设计，更简单一点的操作还可以使用矩形进行。即最后一个周期内$e\left(t\right)$所包围的面积使用$Te\left(k-1\right)$代替。<br>类似的推导过程，得到的替换结果为：<br>$$ s=\dfrac{1}{T}\left(z-1\right) $$<br>前一篇笔记里提到的电池模型的连续状态空间方程的离散化就是通过欧拉法完成的。这是一种形式较为简单的近似化方法。</p>
+<h1 id="状态空间设计方法与离散化"><a href="#状态空间设计方法与离散化" class="headerlink" title="状态空间设计方法与离散化"></a>状态空间设计方法与离散化</h1><p>————————————————————————<br>如上篇笔记中所做的那样，我们使用一组一节矩阵微分方程来对电池模型进行建模：<br>$$ \dfrac{dx}{dt}=Fx+Gu $$<br>其中$x$为系统状态向量，$u$为系统输入向量。输出方程：<br>$$ y=Hx+Ju $$<br>将这个状态空间方程离散化的途径之一就是使用上文中的欧拉法等离散等价设计方法将各微分方程离散化。但是还可以通过另一种离散设计的方法，不需要求解$D\left(s\right)$, 即实现离散化。<br>跳过推论步骤，直接上结论（$L^{-1}$表示拉式反变换）：<br>$$ \phi \left( T\right) =L^{-1}\left[ \left( SI-F\right) ^{-1}\right] $$<br>$$ H\left( t\right) =\int _{0}^{T}\phi \left( t\right) dt\cdot G $$<br>离散化结果为<br>$$ x\left(k+1\right)=\phi\left(T\right)x\left(k\right)+H\left(T\right)u\left(k\right) $$</p>
+<h1 id="二阶RC模型的离散化状态空间方程"><a href="#二阶RC模型的离散化状态空间方程" class="headerlink" title="二阶RC模型的离散化状态空间方程"></a>二阶RC模型的离散化状态空间方程</h1><p>————————————————————————<br>对电池的二阶RC模型构建的一阶线性微分方程组如下：<br>$$ \begin{cases} \dfrac{dSoC}{dt}=-\dfrac{i}{C_{cap}}\\ \dfrac{du_{1}}{dt}=-\dfrac{1}{R_{1}C_{1}}u_{1}+\dfrac{1}{C_{1}}i\\ \dfrac{du_{2}}{dt}=-\dfrac{1}{R_{2}C_{2}}u_{1}+\dfrac{1}{C_{2}}i \end{cases} $$<br>写成矩阵形式：<br>$$ \left[ \begin{matrix} SoC^{‘}\ u_{1}^{‘}\ u_{2}^{‘}\end{matrix} \right]= \left[ \begin{matrix} 0&amp; &amp; \\ &amp; -\dfrac{1}{R_{1}C_{1}}&amp; \\  &amp; &amp; -\dfrac{1}{R_{2}C_{2}}\end{matrix} \right]\left[ \begin{matrix} SoC\\ u_{1}\\ u_{2}\end{matrix} \right]+\left[ \begin{matrix} -\dfrac{1}{C_{cap}}\\ \dfrac{1}{C_{1}}\\ \dfrac{1}{C_{2}}\end{matrix} \right]i $$</p>
+<h2 id="欧拉法-1"><a href="#欧拉法-1" class="headerlink" title="欧拉法"></a>欧拉法</h2><p>使用欧拉方法对其进行离散等价设计，只拿第二个方程示例一下：</p>
+<ol>
+<li>将输入$i$与输出$u_{1}$进行拉普拉斯变换并求得传递函数:<br>$$ \dfrac{U\left(s\right)}{I\left(s\right)}=H\left(s\right)=\dfrac{R_{1}}{R_{1}C_{1}s+1} $$</li>
+<li>进行算子替换：<br>$$ H\left(z\right)=\dfrac{R_{1}}{R_{1}C_{1}\left(\dfrac{z-1}{T}\right)+1} $$</li>
+<li>进行z反变换：<br>$$ U\left(z\right)\left[R_{1}C_{1}\left(z-1\right)+T\right]=I\left(z\right)TR_{1} $$<br>$$ R_{1}C_{1}u_{1}\left(k+1\right)-\left(R_{1}C_{1}-T\right)u_1\left(k\right)=TR_{1}i\left(k\right) $$<br>最终：<br>$$ u_{1}\left(k+1\right)=\left(1-\dfrac{T}{R_{1}C_{1}}\right)u_{1}\left(k\right)+\dfrac{T}{C_{1}}i\left(k\right) $$</li>
+<li>结果：<br>$$ \left[ \begin{matrix} SoC_{k+1}\\ u_{k+1}^{1}\\ u_{k+1}^{2}\end{matrix} \right]= \left[ \begin{matrix} 1&amp; &amp; \\ &amp; 1-\dfrac{T}{R_{1}C_{1}}&amp; \\  &amp; &amp; 1-\dfrac{T}{R_{2}C_{2}}\end{matrix} \right]\left[ \begin{matrix} SoC_{k}\\ u_{k}^1\\ u_{k}^2\end{matrix} \right]+\left[ \begin{matrix} -\dfrac{T}{C_{cap}}\\ \dfrac{T}{C_{1}}\\ \dfrac{T}{C_{2}}\end{matrix} \right]i_{k} $$</li>
+</ol>
+<h2 id="离散设计"><a href="#离散设计" class="headerlink" title="离散设计"></a>离散设计</h2><p>使用离散设计对状态空间方程进行离散化，按照上文所示步骤，结果为：<br>$$ \left[ \begin{matrix} SoC_{k+1}\ u_{k+1}^{1}\\ u_{k+1}^{2}\end{matrix} \right]= \left[ \begin{matrix} 1&amp; &amp; \\ &amp; e^{-\dfrac{T}{R_{1}C_{1}}}&amp; \\  &amp; &amp; e^{-\dfrac{T}{R_{2}C_{2}}}\end{matrix} \right]\left[ \begin{matrix} SoC_{k}\\ u_{k}^1\\ u_{k}^2\end{matrix} \right]+\left[ \begin{matrix} -\dfrac{T}{C_{cap}}\\ R_{1}\left(1-e^{-\dfrac{T}{R_{1}C_{1}}}\right)\\ R_{2}\left(1-e^{-\dfrac{T}{R_{2}C_{2}}}\right)\end{matrix} \right]i_{k} $$<br>自学不易。</p>
+<blockquote>
+<p>参考文献：<br>Gene F.Franklin等. 自动控制原理与设计(第5版)[M]. 人民邮电出版社, 2007.</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/电池管理系统/" rel="tag"># 电池管理系统</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/18/[NOTE]卡尔曼滤波器与电池SoC估计/" rel="next" title="[NOTE]卡尔曼滤波器与电池SoC估计">
+                <i class="fa fa-chevron-left"></i> [NOTE]卡尔曼滤波器与电池SoC估计
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDA2My82NjE4"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">ZHAI</p>
+              <p class="site-description motion-element" itemprop="description">嘿！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#控制系统的分类"><span class="nav-number">1.</span> <span class="nav-text">控制系统的分类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#连续系统与离散系统"><span class="nav-number">1.1.</span> <span class="nav-text">连续系统与离散系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线性与时变"><span class="nav-number">1.2.</span> <span class="nav-text">线性与时变</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#线性时不变系统、卷积积分、传递函数与拉普拉斯变换"><span class="nav-number">2.</span> <span class="nav-text">线性时不变系统、卷积积分、传递函数与拉普拉斯变换</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#卷积积分"><span class="nav-number">2.1.</span> <span class="nav-text">卷积积分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#传递函数"><span class="nav-number">2.2.</span> <span class="nav-text">传递函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拉普拉斯变换"><span class="nav-number">2.3.</span> <span class="nav-text">拉普拉斯变换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#卷积积分、传递函数与拉普拉斯变换的关系"><span class="nav-number">2.4.</span> <span class="nav-text">卷积积分、传递函数与拉普拉斯变换的关系</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#z变换与离散等价设计"><span class="nav-number">3.</span> <span class="nav-text">z变换与离散等价设计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Tustin"><span class="nav-number">3.1.</span> <span class="nav-text">Tustin</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#欧拉法"><span class="nav-number">3.2.</span> <span class="nav-text">欧拉法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#状态空间设计方法与离散化"><span class="nav-number">4.</span> <span class="nav-text">状态空间设计方法与离散化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二阶RC模型的离散化状态空间方程"><span class="nav-number">5.</span> <span class="nav-text">二阶RC模型的离散化状态空间方程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#欧拉法-1"><span class="nav-number">5.1.</span> <span class="nav-text">欧拉法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#离散设计"><span class="nav-number">5.2.</span> <span class="nav-text">离散设计</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ZHAI</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("KUSQG7wOzQ6LdmCBPECy6Xvy-gzGzoHsz", "8QD8j7MG1MamDikPO3OYuxVA");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
