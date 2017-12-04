@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="ZHAI&#39;S">
 <meta property="og:description" content="之前学习如何使用卡尔曼滤波器进行电池SoC估计的时候，跳过了一个很重要的问题——电池模型系统方程的建立。电池模型的种类有很多，最常用的还是二阶RC电路模型。通过基本的电工学知识可以很容易地建立起电路的方程，得到输出电压与输入电流激励的关系。但是在使用卡尔曼滤波器进行SoC估算的时候，我们需要建立起关于这个电路模型的状态空间方程、并得到该方程的离散形式。 控制系统的分类———————————————">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-12-01T13:47:28.886Z">
+<meta property="og:updated_time" content="2017-12-04T13:17:12.083Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[NOTE]电池模型的状态空间方程">
 <meta name="twitter:description" content="之前学习如何使用卡尔曼滤波器进行电池SoC估计的时候，跳过了一个很重要的问题——电池模型系统方程的建立。电池模型的种类有很多，最常用的还是二阶RC电路模型。通过基本的电工学知识可以很容易地建立起电路的方程，得到输出电压与输入电流激励的关系。但是在使用卡尔曼滤波器进行SoC估算的时候，我们需要建立起关于这个电路模型的状态空间方程、并得到该方程的离散形式。 控制系统的分类———————————————">
@@ -385,7 +385,7 @@
 <li>进行z反变换：<br>$$ U\left(z\right)\left[R_{1}C_{1}\left(z-1\right)+T\right]=I\left(z\right)TR_{1} $$<br>$$ R_{1}C_{1}u_{1}\left(k+1\right)-\left(R_{1}C_{1}-T\right)u_1\left(k\right)=TR_{1}i\left(k\right) $$<br>最终：<br>$$ u_{1}\left(k+1\right)=\left(1-\dfrac{T}{R_{1}C_{1}}\right)u_{1}\left(k\right)+\dfrac{T}{C_{1}}i\left(k\right) $$</li>
 <li>结果：<br>$$ \left[ \begin{matrix} SoC_{k+1}\\ u_{k+1}^{1}\\ u_{k+1}^{2}\end{matrix} \right]= \left[ \begin{matrix} 1&amp; &amp; \\ &amp; 1-\dfrac{T}{R_{1}C_{1}}&amp; \\  &amp; &amp; 1-\dfrac{T}{R_{2}C_{2}}\end{matrix} \right]\left[ \begin{matrix} SoC_{k}\\ u_{k}^1\\ u_{k}^2\end{matrix} \right]+\left[ \begin{matrix} -\dfrac{T}{C_{cap}}\\ \dfrac{T}{C_{1}}\\ \dfrac{T}{C_{2}}\end{matrix} \right]i_{k} $$</li>
 </ol>
-<h2 id="离散设计"><a href="#离散设计" class="headerlink" title="离散设计"></a>离散设计</h2><p>使用离散设计对状态空间方程进行离散化，按照上文所示步骤，结果为：<br>$$ \left[ \begin{matrix} SoC_{k+1}\ u_{k+1}^{1}\\ u_{k+1}^{2}\end{matrix} \right]= \left[ \begin{matrix} 1&amp; &amp; \\ &amp; e^{-\dfrac{T}{R_{1}C_{1}}}&amp; \\  &amp; &amp; e^{-\dfrac{T}{R_{2}C_{2}}}\end{matrix} \right]\left[ \begin{matrix} SoC_{k}\\ u_{k}^1\\ u_{k}^2\end{matrix} \right]+\left[ \begin{matrix} -\dfrac{T}{C_{cap}}\\ R_{1}\left(1-e^{-\dfrac{T}{R_{1}C_{1}}}\right)\\ R_{2}\left(1-e^{-\dfrac{T}{R_{2}C_{2}}}\right)\end{matrix} \right]i_{k} $$<br>自学不易。</p>
+<h2 id="离散设计"><a href="#离散设计" class="headerlink" title="离散设计"></a>离散设计</h2><p>使用离散设计对状态空间方程进行离散化，按照上文所示步骤，结果为：<br>$$ \left[ \begin{matrix} SoC_{k+1}\\ u_{k+1}^{1}\\ u_{k+1}^{2}\end{matrix} \right]= \left[ \begin{matrix} 1&amp; &amp; \\ &amp; e^{-\dfrac{T}{R_{1}C_{1}}}&amp; \\  &amp; &amp; e^{-\dfrac{T}{R_{2}C_{2}}}\end{matrix} \right]\left[ \begin{matrix} SoC_{k}\\ u_{k}^1\\ u_{k}^2\end{matrix} \right]+\left[ \begin{matrix} -\dfrac{T}{C_{cap}}\\ R_{1}\left(1-e^{-\dfrac{T}{R_{1}C_{1}}}\right)\\ R_{2}\left(1-e^{-\dfrac{T}{R_{2}C_{2}}}\right)\end{matrix} \right]i_{k} $$<br>自学不易。</p>
 <blockquote>
 <p>参考文献：<br>Gene F.Franklin等. 自动控制原理与设计(第5版)[M]. 人民邮电出版社, 2007.</p>
 </blockquote>
