@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="状态空间方程,连续系统离散化," />
 
 
 
@@ -79,17 +79,18 @@
 
 
 
-<meta name="description" content="ZHAI的学习笔记本">
+<meta name="description" content="之前已经简单了解过状态空间方程的离散化方法，对于二阶等效电路模型来讲，由于其本身各个方程之间不是耦合的，所以离散化计算过程并不是十分复杂，很容易就可以得到其状态空间方程的离散形式。">
+<meta name="keywords" content="状态空间方程,连续系统离散化">
 <meta property="og:type" content="article">
-<meta property="og:title" content="状态空间方程的离散化">
+<meta property="og:title" content="[NOTE]状态空间方程离散化的matlab处理">
 <meta property="og:url" content="http://yoursite.com/2017/12/05/[NOTE]状态空间方程离散化的matlab处理/index.html">
 <meta property="og:site_name" content="ZHAI&#39;S">
-<meta property="og:description" content="ZHAI的学习笔记本">
+<meta property="og:description" content="之前已经简单了解过状态空间方程的离散化方法，对于二阶等效电路模型来讲，由于其本身各个方程之间不是耦合的，所以离散化计算过程并不是十分复杂，很容易就可以得到其状态空间方程的离散形式。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-12-05T07:02:54.273Z">
+<meta property="og:updated_time" content="2018-01-02T09:57:43.708Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="状态空间方程的离散化">
-<meta name="twitter:description" content="ZHAI的学习笔记本">
+<meta name="twitter:title" content="[NOTE]状态空间方程离散化的matlab处理">
+<meta name="twitter:description" content="之前已经简单了解过状态空间方程的离散化方法，对于二阶等效电路模型来讲，由于其本身各个方程之间不是耦合的，所以离散化计算过程并不是十分复杂，很容易就可以得到其状态空间方程的离散形式。">
 
 
 
@@ -125,7 +126,7 @@
 
 
 
-  <title>状态空间方程的离散化 | ZHAI'S</title>
+  <title>[NOTE]状态空间方程离散化的matlab处理 | ZHAI'S</title>
   
 
 
@@ -279,7 +280,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">状态空间方程的离散化</h1>
+          <h1 class="post-title" itemprop="name headline">[NOTE]状态空间方程离散化的matlab处理</h1>
         
 
         <div class="post-meta">
@@ -302,6 +303,28 @@
           </span>
 
           
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/电池管理系统/" itemprop="url" rel="index">
+                    <span itemprop="name">电池管理系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -309,7 +332,7 @@
 
           
           
-             <span id="/2017/12/05/[NOTE]状态空间方程离散化的matlab处理/" class="leancloud_visitors" data-flag-title="状态空间方程的离散化">
+             <span id="/2017/12/05/[NOTE]状态空间方程离散化的matlab处理/" class="leancloud_visitors" data-flag-title="[NOTE]状态空间方程离散化的matlab处理">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -340,7 +363,17 @@
       
 
       
-        
+        <p>之前已经简单了解过状态空间方程的离散化方法，对于二阶等效电路模型来讲，由于其本身各个方程之间不是耦合的，所以离散化计算过程并不是十分复杂，很容易就可以得到其状态空间方程的离散形式。<br><a id="more"></a></p>
+<p>但是对于某些状态空间方程，比如圆柱电池的二状态热模型，由于方程本身是耦合的，所以无法直接通过公式推导就得到其离散化形式，这时就需要求助于matlab。</p>
+<p>对于这样一个连续方程：<br>$$ \dfrac{dx}{dt}=Ax+Bu $$<br>通过<code>[G,H]=c2d(F,G,ts);</code>，便可以将其转化为离散形式，其中时间步长为ts：<br>$$ x_{k+1}=Gx_{k}+Hu_{k} $$<br>G和H为A、B指定时间步长的离散化结果。</p>
+<p>c2d函数过程实际上为之前“电池模型的状态空间方程”一文中介绍的状态空间方程的直接离散化方法，其具体的使用介绍参考<a href="https://cn.mathworks.com/help/control/ref/c2d.html" target="_blank" rel="noopener">Mathworks文档</a>。具体格式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sysd = c2d(sys,Ts)</span><br><span class="line">sysd = c2d(sys,Ts,method)</span><br><span class="line">sysd = c2d(sys,Ts,opts)</span><br><span class="line">[sysd,G] = c2d(sys,Ts,method)</span><br><span class="line">[sysd,G] = c2d(sys,Ts,opts)</span><br></pre></td></tr></table></figure>
+<p>其中method缺省值是零阶保持器。<strong>除了零阶保持器，还有一阶保持器、Tustin等等方法可以选择。但是对于Tustin尚存在一些疑问，因为这种近似方法涉及$x_{k+1}$的值。是不是如果我们并不关注状态值本身的话，只关心输出值，可以将状态方程和输出方程一起使用Tustin这种method离散化。而如果我们关注的是状态值$x_{k+1}$本身，而不是输出值$y_{k}$的话，那就只能使用零阶保持器。（疑问）</strong></p>
+<p>举个例子</p>
+<p>$$ x’=\begin{bmatrix}<br>2 &amp; -1 &amp; -1 \\<br>0 &amp; -1 &amp; 0 \\<br>0 &amp; 2 &amp; 1<br>\end{bmatrix}x+\begin{bmatrix}<br>7 \\<br>2 \\<br>3<br>\end{bmatrix}u$$<br>$$ y=\begin{bmatrix} 1&amp;2&amp;4\end{bmatrix}x $$<br>将该连续方程离散化：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt; A=[2 -1 -1; 0 -1 0;0 2 1];</span><br><span class="line">&gt;&gt; B=[7 2 3]&apos;;</span><br><span class="line">&gt;&gt; C=[1 2 4];</span><br><span class="line">&gt;&gt; D=0;</span><br><span class="line">&gt;&gt; [G1,H1,Cd1,Dd1]=c2dm(A,B,C,D,0.1,&apos;zoh&apos;)</span><br><span class="line"></span><br><span class="line">G1 =</span><br><span class="line"></span><br><span class="line">    1.2214   -0.1162   -0.1162</span><br><span class="line">         0    0.9048         0</span><br><span class="line">         0    0.2003    1.1052</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">H1 =</span><br><span class="line"></span><br><span class="line">    0.7473</span><br><span class="line">    0.1903</span><br><span class="line">    0.3355</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Cd1 =</span><br><span class="line"></span><br><span class="line">     1     2     4</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Dd1 =</span><br><span class="line"></span><br><span class="line">     0</span><br><span class="line"></span><br><span class="line">&gt;&gt; [G2,H2,Cd2,Dd2]=c2dm(A,B,C,D,0.1,&apos;tustin&apos;)</span><br><span class="line"></span><br><span class="line">G2 =</span><br><span class="line"></span><br><span class="line">    1.2222   -0.1170   -0.1170</span><br><span class="line">         0    0.9048         0</span><br><span class="line">         0    0.2005    1.1053</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">H2 =</span><br><span class="line"></span><br><span class="line">    0.7485</span><br><span class="line">    0.1905</span><br><span class="line">    0.3358</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Cd2 =</span><br><span class="line"></span><br><span class="line">    1.1111    2.2473    4.1520</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Dd2 =</span><br><span class="line"></span><br><span class="line">    1.2364</span><br><span class="line"></span><br><span class="line">&gt;&gt; [G,H]=c2d(A,B,0.1)</span><br><span class="line"></span><br><span class="line">G =</span><br><span class="line"></span><br><span class="line">    1.2214   -0.1162   -0.1162</span><br><span class="line">         0    0.9048         0</span><br><span class="line">         0    0.2003    1.1052</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">H =</span><br><span class="line"></span><br><span class="line">    0.7473</span><br><span class="line">    0.1903</span><br><span class="line">    0.3355</span><br><span class="line"></span><br><span class="line">&gt;&gt;</span><br></pre></td></tr></table></figure>
+<p>当然离散系统与其对应的连续系统是存在误差的，时间步长ts越大，误差越大。如果时间步长取得过长，则需要检验一下离散化误差是否再接受范围内。</p>
+
       
     </div>
     
@@ -354,6 +387,14 @@
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/状态空间方程/" rel="tag"># 状态空间方程</a>
+          
+            <a href="/tags/连续系统离散化/" rel="tag"># 连续系统离散化</a>
+          
+        </div>
       
 
       
@@ -473,7 +514,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -512,7 +553,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2017</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
