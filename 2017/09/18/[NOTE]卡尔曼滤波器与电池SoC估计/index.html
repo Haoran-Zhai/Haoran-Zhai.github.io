@@ -96,7 +96,7 @@
 <meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%5BNOTE%5D%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E5%8D%8F%E6%96%B9%E5%B7%AE%E7%9F%A9%E9%98%B5.PNG">
 <meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%5BNOTE%5D%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E6%B5%8B%E9%87%8F%E5%80%BC.png">
 <meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%5BNOTE%5D%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E8%9E%8D%E5%90%88.png">
-<meta property="og:updated_time" content="2018-01-13T07:23:44.699Z">
+<meta property="og:updated_time" content="2018-05-04T12:35:10.350Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[NOTE]卡尔曼滤波器与电池SoC估计">
 <meta name="twitter:description" content="卡尔曼滤波器的通俗理解————————————————————————卡尔曼滤波器的工作过程实际上就是不断地对目前构建的模型进行状态估计、不断地测量实际模型的状态值、并将这两个状态向量融合成更加准确的状态向量、将该状态向量带入新的模型进行下一轮估计的不断迭代的过程。">
@@ -381,7 +381,7 @@
 <p>依据之前构建的电池模型，将系统构建一阶线性微分方程组如下：<br>$$ \begin{cases} \dfrac{dSoC}{dt}=-\dfrac{i}{C_{cap}}\\ \dfrac{du_{1}}{dt}=-\dfrac{1}{R_{1}C_{1}}u_{1}+\dfrac{1}{C_{1}}i\\ \dfrac{du_{2}}{dt}=-\dfrac{1}{R_{2}C_{2}}u_{1}+\dfrac{1}{C_{2}}i \end{cases} $$<br>$$ u=E+u_{1}+u_{2}+i\cdot R_{0} $$<br>$u$为电池的开路电压。</p>
 <p>将上述连续系统近似转化为离散系统并写为矩阵形式如下(具体过程在本文中不详细展开；假设步长为T，即上一时刻与下一时刻采样为T)：<br>$$ \left[ \begin{matrix} SoC_{k}\\ u_{k}^{1}\\ u_{k}^{2}\end{matrix} \right]= \left[ \begin{matrix} 1&amp; &amp; \\ &amp; 1-\dfrac{T}{R_{1}C_{1}}&amp; \\  &amp; &amp; 1-\dfrac{T}{R_{2}C_{2}}\end{matrix} \right]\left[ \begin{matrix} SoC_{k-1}\\ u_{k-1}^1\\ u_{k-1}^2\end{matrix} \right]+\left[ \begin{matrix} -\dfrac{T}{C_{cap}}\\ \dfrac{T}{C_{1}}\\ \dfrac{T}{C_{2}}\end{matrix} \right]i_{k-1} $$<br>故状态方程可以表现成如下的形式：<br>$$ x_{k}^{*}=Fx_{k-1}+Gi_{k-1} $$<br>该状态方程是线性的。</p>
 <h2 id="观测方程"><a href="#观测方程" class="headerlink" title="观测方程"></a>观测方程</h2><p>第二个方程是观测方程。观测方程主要构建的是观测值（在SoC估计中也就是电池的工作电压）与内部状态参数的函数关系，即上文提到过的：<br>$$ u=E+u_{1}+u_{2}+i\cdot R_{0} $$<br>其中$E$是电池的平衡电势，即$EMF$与$V_{h}$的合成值，其与电池的SoC存在非线性的函数关系、且与电池的充放电状态等等有关，如下图所示：<br><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%5BNOTE%5D%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/EMF-SoC.PNG" alt=""><br>1、2、3分别为充电平衡、EMF以及放电平衡曲线。<br>忽略滞回电压对平衡电势的影响以及其他因素的影响，将平衡电势曲线近似看为只与SoC有关：<br>$$ E=g\left(SoC\right) $$<br>如果运用查表来在BMS中获得该函数关系的话，将会大大增加嵌入式系统的压力，所以一般采用多项式拟合的方法，获得该函数并带入计算。<br>$$ E=n_{0}SoC^0+n_{1}SoC^1+n_{2}SoC^2+n_{3}SoC^3+…+n_{n}SoC^n $$<br>很明显，观测方程是一个非线性方程。所以这里的卡尔曼滤波器实际上是扩展的卡尔曼滤波器，经典卡尔曼滤波器的状态方程和观测方程都只能是线性方程。</p>
-<p>将上述模型方程写成矩阵形式并离散化：<br>$$ u_{k}^{*}=\left[ \begin{matrix} h_{k}^{*}&amp; &amp; \\ &amp; 1&amp; \\ &amp; &amp; 1 \end{matrix} \right]\left[ \begin{matrix} SoC_{k}\\ u_{k}^{1}\\ u_{k}^{2}\end{matrix} \right]+R_{0}\cdot i_{k} $$<br>故观测方程可以表现成如下的形式：<br>$$ y_{k}^{*}=H_{k}x_{k}+Ji_{k} $$<br>理论上$H_{k}$是由观测方程得到的雅可比矩阵：<br>$$ H_{k\left[i,j\right]}=\dfrac{\partial h_{\left[i\right]}}{\partial x_{\left[j\right]}} \left[x_{k}^{*}\right] $$<br>这里$h_{k}$是$g\left(SoC\right)$对$SoC$的导数（这是一种将非线性方程线性化的方法）。上面两个方程都可以看成是模型方程，也就是说这两个方程根据物理模型，得到了激励、电池内部状态与电池工作电压的关系——根据上一时刻的电池状态和输入激励可以推测出该时刻的电池内部状态，通过该时刻电池内部状态的估计值可以估计出该时刻的电池工作电压。这两组模型公式实际上也是在控制原理中讲过的标准的状态空间方程，即用一阶微分方程组来描述有界动态系统的运动、用线性方程组描述系统的输出。</p>
+<p>将上述模型方程写成矩阵形式并离散化：<br>$$ u_{k}^{*}=\left[ \begin{matrix} h_{k}^{*}&amp; 1 &amp; 1 \end{matrix} \right]\left[ \begin{matrix} SoC_{k}\\ u_{k}^{1}\\ u_{k}^{2}\end{matrix} \right]+R_{0}\cdot i_{k} $$<br>故观测方程可以表现成如下的形式：<br>$$ y_{k}^{*}=H_{k}x_{k}+Ji_{k} $$<br>理论上$H_{k}$是由观测方程得到的雅可比矩阵：<br>$$ H_{k\left[i,j\right]}=\dfrac{\partial h_{\left[i\right]}}{\partial x_{\left[j\right]}} \left[x_{k}^{*}\right] $$<br>这里$h_{k}$是$g\left(SoC\right)$对$SoC$的导数（这是一种将非线性方程线性化的方法）。上面两个方程都可以看成是模型方程，也就是说这两个方程根据物理模型，得到了激励、电池内部状态与电池工作电压的关系——根据上一时刻的电池状态和输入激励可以推测出该时刻的电池内部状态，通过该时刻电池内部状态的估计值可以估计出该时刻的电池工作电压。这两组模型公式实际上也是在控制原理中讲过的标准的状态空间方程，即用一阶微分方程组来描述有界动态系统的运动、用线性方程组描述系统的输出。</p>
 <h2 id="Kalman增益"><a href="#Kalman增益" class="headerlink" title="Kalman增益"></a>Kalman增益</h2><p>第三个方程就是就是求解卡尔曼增益矩阵$K_{k}$。所谓的卡尔曼增益，即为将根据模型计算出的状态值分布与通过传感器获取的测量值分布融合成一个新的分布的方法。<br>得到卡尔曼增益，首先要计算状态向量$x_{k}$的协方差矩阵$P_{k}^{*}$。这个协方差矩阵表示出了状态向量中各元素之间的相关关系。一个例子：<br><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%5BNOTE%5D%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E5%8D%8F%E6%96%B9%E5%B7%AE%E7%9F%A9%E9%98%B5.PNG" alt=""><br>这个图描述了一个小车的运动，运动状态向量包含速度和位移两个变量。小车在某一时刻的状态是符合正态分布的（如中间的图片所示）（当然这是卡尔曼滤波器成立的前提），图中越亮的地方表示概率越大。如果小车的速度与位移之间存在一定联系的话（比如我们合理地推测，当小车速度越大时、位移很大概率也是更大的），则相应地，发亮的部分的形状会发生一定地改变（如右边的图片所示）。右图中很容易能看出，速度和位移呈正相关关系。而这个影响状态向量概率分布形状的相关关系，就用状态向量的协方差矩阵来表示。<br>相应地，我们通过传感器获得的观测值的随机分布可能是这样的：<br><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%5BNOTE%5D%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E6%B5%8B%E9%87%8F%E5%80%BC.png" alt=""><br>所以有理由相信，紫色部分和绿色部分重合的部分，是集合了两个分布的更加可信的值。<br><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%5BNOTE%5D%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E8%9E%8D%E5%90%88.png" alt=""><br>因为实际应用中，我们没法直接求解出协方差矩阵具体的值，而且由于激励噪声和系统本身性质的原因，所以状态向量的协方差矩阵也不是确定的值，而是一个不断更新的值。故通过设定初值并不断更新的方法，得到每个时刻的协方差矩阵。具体就是:<br>$$ P_{k}^{*}=F_{K}P_{k-1}F_{k}^{T}+Q_{k-1} $$<br>$Q_{k}$是过程激励($i_{k}$)噪声的协方差矩阵。$P_{k-1}$为上一时刻的状态向量的协方差矩阵。</p>
 <p>之后所需要做的是通过一定的方法把重合的新的状态向量的分布求出来，其实就是求解卡尔曼增益（根据正态分布的特殊性质，新的分布仍旧是正态分布）。</p>
 <p>Kalman增益矩阵（需要计算观测方程中的$H_{k}$。上文中已介绍了$H_{k}$的求法）：<br>$$ K_{k}=P_{k}^{*}H_{k}^{T}\left(H_{k}P_{k-1}H_{k}^{T}+R_{k}\right)^{-1} $$<br>$R_{k}$为观测($u_{k}$)噪声的协方差矩阵。<br>此时便得到了卡尔曼增益矩阵，下一步需要做的就是运用卡尔曼增益矩阵求得最终的状态向量。</p>
@@ -527,7 +527,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -538,7 +538,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -549,7 +549,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

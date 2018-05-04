@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="电池管理系统,等效电路模型,参数估计," />
+  <meta name="keywords" content="电池管理系统,优化算法,整车控制,能量管理,可用功率估计," />
 
 
 
@@ -79,26 +79,24 @@
 
 
 
-<meta name="description" content="建立一个准确的电池模型是电池管理系统的基础。在选定了一个等效电池模型之后，就需要根据对其中的阻抗参数等等参数进行辨识。 对于一个二阶RC等效电路模型来说，需要识别的参数有欧姆内阻Ro，两个RC环节的阻抗参数R1、R2和C1、C2。当然，如果连开路电压OCV都未知的话，还需要识别OCV。而且，以上这些参数都是电池SoC的">
-<meta name="keywords" content="电池管理系统,等效电路模型,参数估计">
+<meta name="description" content="第一次了解动态规划算法是在北大郭炜老师的算法课上。当时只是理解了动态规划算法的优越性主要是其尽可能地避免了问题求解过程中地重复运算。只是没想到后来遇到的一个工程问题（关于最小燃油消耗目标下的功率分配）中，可以运用动态规划算法进行求解。 动态规划介绍————————————————————————首先简述一下动态规划算法">
+<meta name="keywords" content="电池管理系统,优化算法,整车控制,能量管理,可用功率估计">
 <meta property="og:type" content="article">
-<meta property="og:title" content="电池模型的参数估计">
-<meta property="og:url" content="http://yoursite.com/2018/01/21/电池模型的参数估计/index.html">
+<meta property="og:title" content="简单的动态规划算法与工程应用">
+<meta property="og:url" content="http://yoursite.com/2018/04/28/动态规划算法/index.html">
 <meta property="og:site_name" content="ZHAI&#39;S">
-<meta property="og:description" content="建立一个准确的电池模型是电池管理系统的基础。在选定了一个等效电池模型之后，就需要根据对其中的阻抗参数等等参数进行辨识。 对于一个二阶RC等效电路模型来说，需要识别的参数有欧姆内阻Ro，两个RC环节的阻抗参数R1、R2和C1、C2。当然，如果连开路电压OCV都未知的话，还需要识别OCV。而且，以上这些参数都是电池SoC的函数。">
+<meta property="og:description" content="第一次了解动态规划算法是在北大郭炜老师的算法课上。当时只是理解了动态规划算法的优越性主要是其尽可能地避免了问题求解过程中地重复运算。只是没想到后来遇到的一个工程问题（关于最小燃油消耗目标下的功率分配）中，可以运用动态规划算法进行求解。 动态规划介绍————————————————————————首先简述一下动态规划算法中的思路，以及其是如何避免了求解过程中的重复运算。 上图代表了一个简单的问题，图">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E7%94%B5%E6%B1%A0%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1/halfC.png">
-<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E7%94%B5%E6%B1%A0%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1/%E7%94%B5%E5%8E%8B%E6%AE%B5-%E6%A0%87%E6%B3%A8.png">
-<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E7%94%B5%E6%B1%A0%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1/simulink%E7%94%B5%E6%B1%A0%E6%A8%A1%E5%9E%8B.PNG">
-<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E7%94%B5%E6%B1%A0%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1/ConfigurationParameter.PNG">
-<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E7%94%B5%E6%B1%A0%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1/InkedParameter_LI.jpg">
-<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E7%94%B5%E6%B1%A0%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1/Inkedexp_LI.jpg">
-<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E7%94%B5%E6%B1%A0%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1/result.PNG">
-<meta property="og:updated_time" content="2018-04-28T07:02:46.888Z">
+<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%951.PNG">
+<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%953.PNG">
+<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%954.PNG">
+<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%955.PNG">
+<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%952.PNG">
+<meta property="og:updated_time" content="2018-05-04T12:39:54.652Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="电池模型的参数估计">
-<meta name="twitter:description" content="建立一个准确的电池模型是电池管理系统的基础。在选定了一个等效电池模型之后，就需要根据对其中的阻抗参数等等参数进行辨识。 对于一个二阶RC等效电路模型来说，需要识别的参数有欧姆内阻Ro，两个RC环节的阻抗参数R1、R2和C1、C2。当然，如果连开路电压OCV都未知的话，还需要识别OCV。而且，以上这些参数都是电池SoC的函数。">
-<meta name="twitter:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E7%94%B5%E6%B1%A0%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1/halfC.png">
+<meta name="twitter:title" content="简单的动态规划算法与工程应用">
+<meta name="twitter:description" content="第一次了解动态规划算法是在北大郭炜老师的算法课上。当时只是理解了动态规划算法的优越性主要是其尽可能地避免了问题求解过程中地重复运算。只是没想到后来遇到的一个工程问题（关于最小燃油消耗目标下的功率分配）中，可以运用动态规划算法进行求解。 动态规划介绍————————————————————————首先简述一下动态规划算法中的思路，以及其是如何避免了求解过程中的重复运算。 上图代表了一个简单的问题，图">
+<meta name="twitter:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%951.PNG">
 
 
 
@@ -128,13 +126,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/01/21/电池模型的参数估计/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/04/28/动态规划算法/"/>
 
 
 
 
 
-  <title>电池模型的参数估计 | ZHAI'S</title>
+  <title>简单的动态规划算法与工程应用 | ZHAI'S</title>
   
 
 
@@ -271,7 +269,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/21/电池模型的参数估计/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/28/动态规划算法/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ZHAI">
@@ -288,7 +286,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">电池模型的参数估计</h1>
+          <h1 class="post-title" itemprop="name headline">简单的动态规划算法与工程应用</h1>
         
 
         <div class="post-meta">
@@ -300,8 +298,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-21T17:35:30+08:00">
-                2018-01-21
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-28T14:59:01+08:00">
+                2018-04-28
               </time>
             
 
@@ -323,8 +321,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/电池管理系统/" itemprop="url" rel="index">
-                    <span itemprop="name">电池管理系统</span>
+                  <a href="/categories/算法/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
                   </a>
                 </span>
 
@@ -340,7 +338,7 @@
 
           
           
-             <span id="/2018/01/21/电池模型的参数估计/" class="leancloud_visitors" data-flag-title="电池模型的参数估计">
+             <span id="/2018/04/28/动态规划算法/" class="leancloud_visitors" data-flag-title="简单的动态规划算法与工程应用">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -371,25 +369,41 @@
       
 
       
-        <p>建立一个准确的电池模型是电池管理系统的基础。在选定了一个等效电池模型之后，就需要根据对其中的阻抗参数等等参数进行辨识。</p>
-<p>对于一个二阶RC等效电路模型来说，需要识别的参数有欧姆内阻Ro，两个RC环节的阻抗参数R1、R2和C1、C2。当然，如果连开路电压OCV都未知的话，还需要识别OCV。而且，以上这些参数都是电池SoC的函数。<br><a id="more"></a></p>
-<h1 id="实验工况"><a href="#实验工况" class="headerlink" title="实验工况"></a>实验工况</h1><p>————————————————————————<br>进行电池参数识别的工况一般选用周期性变化的电流，如下图所示。</p>
-<p><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%E7%94%B5%E6%B1%A0%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1/halfC.png" alt=""><br>图中电流方波的大小为0.5C，每个周期放电5%，共20个周期。记录整个放电过程中电池端电压的变化值。这样每隔5%的SoC就可以获得一组电池参数。</p>
-<h1 id="参数估计"><a href="#参数估计" class="headerlink" title="参数估计"></a>参数估计</h1><p>————————————————————————<br>提取一下在每个电流方波结束附近的端电压曲线：</p>
-<p><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%E7%94%B5%E6%B1%A0%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1/%E7%94%B5%E5%8E%8B%E6%AE%B5-%E6%A0%87%E6%B3%A8.png" alt=""><br>其中，A-B段为电流为0瞬间，欧姆内阻Ro导致的瞬间的电压降。而Ro正可由此段求得：<br>$$ Ro=\dfrac{\Delta v}{I} $$<br>而B-C段则为RC电路环节导致的电压缓慢上升，根据物理模型建立改段的微分方程为：<br>$$ u(t)=ocv+IR_{1}e^{-\dfrac {t}{R_{1}C_{1}}}+IR_{2}e^{-\dfrac {t}{R_{2}C_{2}}} $$<br>通过MATLAB中的cftools APP，进行形如y=-a*exp(-bx)-c*exp(-dx)+e的函数拟合，分别求得a、b、c、d、e的值，对应于原微分方程，可以求得：<br>$$ \begin{cases}R_{1}=\dfrac{a}{I}\\R_{2}=\dfrac{c}{I}\\C_{1}=\dfrac{I}{ab}\\C_{2}=\dfrac{I}{cd}\\ocv=e\end{cases} $$<br>这样我们就获得了在SoC(k+1)水平下电池的阻抗参数。对20组数据均作如此处理，就可以获得每隔5%SoC下的电池参数。</p>
-<h1 id="参数优化"><a href="#参数优化" class="headerlink" title="参数优化"></a>参数优化</h1><p>————————————————————————<br>实际上simulink本身带有Parameter Estimation功能，位于Analysis-Parameter Estimation下。搭建电池模型如下图所示：</p>
-<p><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%E7%94%B5%E6%B1%A0%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1/simulink%E7%94%B5%E6%B1%A0%E6%A8%A1%E5%9E%8B.PNG" alt=""><br>电池模型的输入为实验的电流输入，输出为端电压，参数为我们通过cftool拟合得到的电池参数。同时导入实验测试的端电压变化值。选定需要优化的参数后，系统机会根据实验与模型的差值自动矫正模型参数。缺点是整个过程过于漫长，而且依赖于初始值的选择。<br>具体操作流程如下：</p>
-<ol>
-<li>建立电池的simulink模型。<br>这里需要注意的是，一定要在电流输入和电压输入的模块用input和output模块，如上图所示。如果输出位置使用的模块是To Workspace的话，Parameter Estimation是完全捕捉不到系统的输出的。<br>output模块没有什么特殊的设定，但是input需要在Model Configuration Parames里设定输入：<br><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%E7%94%B5%E6%B1%A0%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1/ConfigurationParameter.PNG" alt=""><br>需要设定一个具有两个向量的输入矩阵（图中[t,u]），一个向量为时间t，另外一个向量为电流u。</li>
-<li>参数设置<br>在Parameter Estimation界面中，首先需要对左侧第一个任务块进行设置，该任务块用来指定需要优化的模型参数。右键Parameter任务块的空白处，选择需要优化的参数。<br><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%E7%94%B5%E6%B1%A0%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1/InkedParameter_LI.jpg" alt=""></li>
-<li>指定实验<br>接下来需要设定实验任务块。在这里要指定simulink的输出并导入真实的电压输出值。<br><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%E7%94%B5%E6%B1%A0%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1/Inkedexp_LI.jpg" alt=""><br>系统根据搭建的simulink模型自动设定input和output，如果没有点击output的+号自行指定输出。设定模型输出后点击导入摁钮导入实际实验的输出端电压值。可支持xlsx、csv等等数据格式。<br>input不需要指定，若系统自行指定删除即可。<br>设定完成后，可以进行一次实验与仿真的对比，右键实验exp，选择”plot measured &amp; simulated data”，则系统会自动进行一次仿真并将仿真结果与你导入的实验数据一同plot。</li>
-<li>Estimation<br>单击Estimation，参数估计开始。在这个过程中系统会不断运行simulink模型、更改系统参数、降低measured与simulated的差异。整个过程很漫长，尝试了一次大概在5h左右。最终调整后的参数使仿真与实验的差异大大降低。<br><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%E7%94%B5%E6%B1%A0%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1/result.PNG" alt=""><br>（此次优化电池输入并不是上文图中所示）</li>
-</ol>
-<p>其实也可以跳过上文中使用cftools得步骤直接开始用Parameter Estimation进行参数优化。把每个SoC下的模型参数设为某个合理的常数，让MATLAB自行优化。也可以把该过程作为一个参数优化过程，优化已经获得的参数。</p>
-<p>参考资料：</p>
-<blockquote>
-<p><a href="https://cn.mathworks.com/discovery/parameter-estimation.html" target="_blank" rel="noopener">Mathworks官方使用手册</a><br><a href="https://cn.mathworks.com/help/sldo/ug/estimate-model-parameter-values-gui.html" target="_blank" rel="noopener">一个Mathworks提供的官方案例教程</a><br><a href="https://cn.mathworks.com/help/sldo/examples/importing-and-preprocessing-experiment-data-gui.html" target="_blank" rel="noopener">详细的Parameter Estimation设置过程</a></p>
-</blockquote>
+        <p>第一次了解动态规划算法是在北大郭炜老师的算法课上。当时只是理解了动态规划算法的优越性主要是其尽可能地避免了问题求解过程中地重复运算。只是没想到后来遇到的一个工程问题（关于最小燃油消耗目标下的功率分配）中，可以运用动态规划算法进行求解。</p>
+<h1 id="动态规划介绍"><a href="#动态规划介绍" class="headerlink" title="动态规划介绍"></a>动态规划介绍</h1><p>————————————————————————<br>首先简述一下动态规划算法中的思路，以及其是如何避免了求解过程中的重复运算。</p>
+<p><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%951.PNG" alt=""><br>上图代表了一个简单的问题，图中的箭头代表我可以选择的路径，假设每抵达一个圆就要花费上面所写的相应的数字，如果我想从起点走到终点，即我需要走四步，那我该如何安排我前三步的走法，使我到达终点时总花费最小呢。</p>
+<p>这个问题比较简单，可能一眼就能看出来，那如果是个复杂的问题的话，那就只能通过运算得到了。</p>
+<p>如果是要穷举的话（这是最不需要动脑的一种算法了），就这个简单的问题，那大概需要计算：<br>69+36+75+10=…<br>69+36+69+10=…<br>……<br>……<br>88+36+75+10=…<br>88+36+69+10=…<br>……<br>……</p>
+<p>然后比较出总花费最小的那一个，即为我们的路径。</p>
+<p>通过这个举例，我们发现实际上在穷举过程中，包含了很多相同的计算比如69+36+75+10和88+36+75+10二者都包含了36+75+10这个运算，当然肯定还有许多运算都包含了36+69+10这个运算。这说明，在整个计算过程中有很多相同的运算都被重复计算了。</p>
+<p>而动态规划算法，就是要避开这些重复的计算。</p>
+<p>这个图用动态规划算法怎么算呢？</p>
+<p>倒着算。首先算出最后一步到终点的花费。最后一步，不管你在哪个圆上，你都要迈上终点，即花费10。即我们计算出了最后一步各个圆到终点的最小花费是min_cost3=[10 10 10]。保存该值。</p>
+<p><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%953.PNG" alt=""></p>
+<p>然后是倒数第二步，倒数第二步就不一样了，我们有很多路可以选，如果站在36上，你可以迈向75，也可以迈向69；如果站在92上，那可以迈向75、69和66。</p>
+<p>我们可以挨着计算，首先，如果我们站在36上，那我们可以迈向75，而从75到终点的min_cost3(1)=10我们已经计算并保存起来了，即目前这条路的cost=75+10=85；同样，我们可以计算出从36迈向69最终到终点的cost为69+min_cost3(2)=69+10=79。</p>
+<p>好了目前我们把站在36上的情况已经计算完毕了，那现在我们可以得出一个结论了，如果在倒数第二步时，我们站在了36上，那我们到终点最小的花费应该是min_cost2(1)=min(85,79)=79。</p>
+<p>那如果我们站在了92上呢，在92上我又三条路可以走，而这三条路到终点的最小cost应该为min_cost2(2)=76；</p>
+<p>同理如果站在77上那最短的路min_cost2(3)=76；</p>
+<p>即第二步到终点的最小花费为min_cost2=[79 76 76]；</p>
+<p><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%954.PNG" alt=""></p>
+<p>接下来我们要计算第二步也就是倒数第三步了，同样地，如果我们站在69的位置，我们的两种选择在这一步的花费分别为36和92，而从36和92到终点的最小花费我们已经计算并且存储分别为min_cost2(1)=79和min_cost2(2)=76；</p>
+<p>即这两条路的总花费分别为36+79=115和92+76=168.比较起来，站在36的位置，最小的花费应该是115。即min_cost1(1)=115。同样可计算min_cost1(2)=115, min_cost1(3)=153。 即min_cost1=[115 115 153]。</p>
+<p><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%955.PNG" alt=""></p>
+<p>现在可以计算第一步了，第一步有三种选择，而这每种选择其到终点的最小花费已经计算完毕了，也就是只需要计算69+min_cost1(1)、69+min_cost1(2)、69+min_cost1(3)。</p>
+<p>取这三个结果的最小值。即最终的min_cost=183。 在每一步计算时都把该步的最终选择标注一下，即可得到该最小花费所需要的路径，如下图所示。</p>
+<p><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%952.PNG" alt=""></p>
+<p>在这整个过程中，任意一个状态点到终点的最小cost都得到了计算并且将结果进行存储，在下一步计算的时候可以直接调用存储结果，这样可以降低了计算规模与计算量。</p>
+<h1 id="如何用动态规划解决工程问题"><a href="#如何用动态规划解决工程问题" class="headerlink" title="如何用动态规划解决工程问题"></a>如何用动态规划解决工程问题</h1><p>————————————————————————<br>对于工程问题，如果该工程问题的状态值可以离散，输入也可以离散，每一步的cost也可求，对于cost的计算也很明确的话，那该工程问题就可以针对cost通过动态规划优化出最佳路径。</p>
+<p>首先第一点，确定优化的目标是什么，最小的油耗？最近的路程？最短的时间？这个概念也就是上题中提到过的花费cost。</p>
+<p>那第二点，需要明确该问题的状态是什么，而该状态的起点和终点又是什么。</p>
+<p>如果研究的对象是电池的话，根据电池模型的建模的不同，状态值大概有SoC、v1等等状态量。不过我觉得状态量的确定应该是根据cost的计算需求确定的。比如计算cost的时候，需要根据目前的状态来计算，但是实际上由于动态规划算法本身是一个倒序的过程，并不能按照状态方程的方式正序计算。所以期间的状态值需要在一定程度上的合理范围内离散成上题中那一个个“圆”，根据所选择的路径、计算从一个圆到下一步的“圆”再到终点的cost。</p>
+<p>第三点也就是第二点后面提到的，关于路径。在上一题中，可选择的路径已经确定好了，从上一个状态如何进入到下一个状态，有的是可以有三条路、而有的只能是两条。在实际的问题中，路径不可能是无限的，也就是在一个时间步长内，状态的转移自然是有限度的，仍旧拿电池举例，一块电池在1s的时间步长内，充放电的最大电流为10A，则soc只能在正负10A·s/Capability范围内波动。如果把-10到+10离散成101个点，则对于每个状态点路径可选择的范围就只有101条。</p>
+<p>第四点是关于实际的工程问题大都是连续的，需要将连续问题离散化，所有的状态都要离散、“路径”也要离散、而计算cost的时候由于根据路径走到的下一步的状态非常有可能不是刚好落在“圆”上，所也以需要插值。所以一般来说离散间距越小计算越精确、不过也会同时带来计算时间过长的问题。常常要平衡二者，如果是始用matlab编写代码的话，还需要优化代码、启用并行运算等，缩短计算时间。对于非单一状态值的问题，这样每个时间点上得到的就不是状态向量而是状态平面了。这个时候如果想用parfor开启并行运算，就需要将双for转成单for：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">for i=1:row</span><br><span class="line">    for j=1:col</span><br><span class="line">	~</span><br><span class="line">	end</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p>转为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">parfor m=1:(row*col)</span><br><span class="line">    i=floor((m-1)/col)+1;</span><br><span class="line">    j=mod(m-1,col)+1;</span><br><span class="line">	~</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
+<p>如果是用matlab编写伪代码的话，大概是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">初始化所需参数;</span><br><span class="line">for k=时间终点-1:步长:1</span><br><span class="line">	for i=1:状态离散长度</span><br><span class="line">		对于当前状态值，计算不同当前可选择路径下到达的下一状态值和需要的cost;</span><br><span class="line">		对于上述计算的不同路径下达到的下一状态值，插值得到该状态到终点的min_cost;</span><br><span class="line">		当前状态到终点的最小cost=min(各个路径(当前状态到下一状态的cost+下一状态到终点的最小cost));</span><br><span class="line">		记录上述当前状态到终点最小cost所选择的路径;</span><br><span class="line">	end</span><br><span class="line">end</span><br><span class="line">for k=1:步长:时间终点-1</span><br><span class="line">	插值得到该状态点到下一状态点的最佳路径;</span><br><span class="line">	根据路径计算下一状态点;</span><br><span class="line">    根据路径与状态计算cost;</span><br><span class="line">end</span><br><span class="line">~</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -409,9 +423,13 @@
           
             <a href="/tags/电池管理系统/" rel="tag"># 电池管理系统</a>
           
-            <a href="/tags/等效电路模型/" rel="tag"># 等效电路模型</a>
+            <a href="/tags/优化算法/" rel="tag"># 优化算法</a>
           
-            <a href="/tags/参数估计/" rel="tag"># 参数估计</a>
+            <a href="/tags/整车控制/" rel="tag"># 整车控制</a>
+          
+            <a href="/tags/能量管理/" rel="tag"># 能量管理</a>
+          
+            <a href="/tags/可用功率估计/" rel="tag"># 可用功率估计</a>
           
         </div>
       
@@ -424,8 +442,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/12/05/[NOTE]状态空间方程离散化的matlab处理/" rel="next" title="[NOTE]状态空间方程离散化的matlab处理">
-                <i class="fa fa-chevron-left"></i> [NOTE]状态空间方程离散化的matlab处理
+              <a href="/2018/01/21/电池模型的参数估计/" rel="next" title="电池模型的参数估计">
+                <i class="fa fa-chevron-left"></i> 电池模型的参数估计
               </a>
             
           </div>
@@ -433,10 +451,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/04/28/动态规划算法/" rel="prev" title="简单的动态规划算法与工程应用">
-                简单的动态规划算法与工程应用 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -581,7 +595,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#实验工况"><span class="nav-number">1.</span> <span class="nav-text">实验工况</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参数估计"><span class="nav-number">2.</span> <span class="nav-text">参数估计</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参数优化"><span class="nav-number">3.</span> <span class="nav-text">参数优化</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#动态规划介绍"><span class="nav-number">1.</span> <span class="nav-text">动态规划介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何用动态规划解决工程问题"><span class="nav-number">2.</span> <span class="nav-text">如何用动态规划解决工程问题</span></a></li></ol></div>
             
 
           </div>
