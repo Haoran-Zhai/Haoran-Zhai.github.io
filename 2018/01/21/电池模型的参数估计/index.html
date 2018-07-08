@@ -82,7 +82,7 @@
 <meta name="description" content="建立一个准确的电池模型是电池管理系统的基础。在选定了一个等效电池模型之后，就需要根据对其中的阻抗参数等等参数进行辨识。 对于一个二阶RC等效电路模型来说，需要识别的参数有欧姆内阻Ro，两个RC环节的阻抗参数R1、R2和C1、C2。当然，如果连开路电压OCV都未知的话，还需要识别OCV。而且，以上这些参数都是电池SoC的">
 <meta name="keywords" content="电池管理系统,等效电路模型,参数估计">
 <meta property="og:type" content="article">
-<meta property="og:title" content="电池模型的参数估计">
+<meta property="og:title" content="二阶RC等效电路模型的参数估计">
 <meta property="og:url" content="http://yoursite.com/2018/01/21/电池模型的参数估计/index.html">
 <meta property="og:site_name" content="ZHAI&#39;S">
 <meta property="og:description" content="建立一个准确的电池模型是电池管理系统的基础。在选定了一个等效电池模型之后，就需要根据对其中的阻抗参数等等参数进行辨识。 对于一个二阶RC等效电路模型来说，需要识别的参数有欧姆内阻Ro，两个RC环节的阻抗参数R1、R2和C1、C2。当然，如果连开路电压OCV都未知的话，还需要识别OCV。而且，以上这些参数都是电池SoC的函数。">
@@ -94,9 +94,9 @@
 <meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E7%94%B5%E6%B1%A0%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1/InkedParameter_LI.jpg">
 <meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E7%94%B5%E6%B1%A0%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1/Inkedexp_LI.jpg">
 <meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E7%94%B5%E6%B1%A0%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1/result.PNG">
-<meta property="og:updated_time" content="2018-04-28T07:02:46.888Z">
+<meta property="og:updated_time" content="2018-07-07T08:51:06.570Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="电池模型的参数估计">
+<meta name="twitter:title" content="二阶RC等效电路模型的参数估计">
 <meta name="twitter:description" content="建立一个准确的电池模型是电池管理系统的基础。在选定了一个等效电池模型之后，就需要根据对其中的阻抗参数等等参数进行辨识。 对于一个二阶RC等效电路模型来说，需要识别的参数有欧姆内阻Ro，两个RC环节的阻抗参数R1、R2和C1、C2。当然，如果连开路电压OCV都未知的话，还需要识别OCV。而且，以上这些参数都是电池SoC的函数。">
 <meta name="twitter:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E7%94%B5%E6%B1%A0%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1/halfC.png">
 
@@ -134,7 +134,7 @@
 
 
 
-  <title>电池模型的参数估计 | ZHAI'S</title>
+  <title>二阶RC等效电路模型的参数估计 | ZHAI'S</title>
   
 
 
@@ -288,7 +288,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">电池模型的参数估计</h1>
+          <h1 class="post-title" itemprop="name headline">二阶RC等效电路模型的参数估计</h1>
         
 
         <div class="post-meta">
@@ -340,7 +340,7 @@
 
           
           
-             <span id="/2018/01/21/电池模型的参数估计/" class="leancloud_visitors" data-flag-title="电池模型的参数估计">
+             <span id="/2018/01/21/电池模型的参数估计/" class="leancloud_visitors" data-flag-title="二阶RC等效电路模型的参数估计">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -524,7 +524,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -535,7 +535,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -546,7 +546,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
