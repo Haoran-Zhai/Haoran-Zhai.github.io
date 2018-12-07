@@ -87,14 +87,14 @@
 <meta property="og:site_name" content="ZHAI&#39;S">
 <meta property="og:description" content="如果常常使用windows远程桌面和SSH控制树莓派的话，能实现在电脑和树莓派中互传文件则能够提供很大的方便。希望就如同使用VM虚拟机那样能够任意传递文件。在网上搜索了一下发现在树莓派上安装FTP服务器就可以基本实现想要的效果，而且过程非常简单。 在树莓派安装并配置FTP————————————————————————  安装vsftpd服务器sudo apt-get install vsftpd">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%AE%89%E8%A3%85FTP%E6%9C%8D%E5%8A%A1%E5%99%A8/ftp1.PNG">
-<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%AE%89%E8%A3%85FTP%E6%9C%8D%E5%8A%A1%E5%99%A8/ftp2.PNG">
-<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%AE%89%E8%A3%85FTP%E6%9C%8D%E5%8A%A1%E5%99%A8/ftp3.PNG">
-<meta property="og:updated_time" content="2017-11-16T06:28:36.647Z">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%AE%89%E8%A3%85FTP%E6%9C%8D%E5%8A%A1%E5%99%A8/ftp1.PNG">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%AE%89%E8%A3%85FTP%E6%9C%8D%E5%8A%A1%E5%99%A8/ftp2.PNG">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%AE%89%E8%A3%85FTP%E6%9C%8D%E5%8A%A1%E5%99%A8/ftp3.PNG">
+<meta property="og:updated_time" content="2018-12-07T10:52:56.236Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="树莓派安装FTP服务器">
 <meta name="twitter:description" content="如果常常使用windows远程桌面和SSH控制树莓派的话，能实现在电脑和树莓派中互传文件则能够提供很大的方便。希望就如同使用VM虚拟机那样能够任意传递文件。在网上搜索了一下发现在树莓派上安装FTP服务器就可以基本实现想要的效果，而且过程非常简单。 在树莓派安装并配置FTP————————————————————————  安装vsftpd服务器sudo apt-get install vsftpd">
-<meta name="twitter:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%AE%89%E8%A3%85FTP%E6%9C%8D%E5%8A%A1%E5%99%A8/ftp1.PNG">
+<meta name="twitter:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%AE%89%E8%A3%85FTP%E6%9C%8D%E5%8A%A1%E5%99%A8/ftp1.PNG">
 
 
 
@@ -375,15 +375,15 @@
 </li>
 <li><p>启动ftp服务<br><code>sudo service vsftpd start</code></p>
 </li>
-<li><p>使用nano编辑vsftdp的配置文件<br><code>sudo nano /etc/vsftpd.conf</code><br>找到并修改以下行（可使用方向键向下翻页）<br><code>anonymous_enable=NO</code><br>不允许匿名访问<br><code>local_enable=YES</code><br>设定本地用户访问<br><code>write_enable=YES</code><br>设定写权限<br><code>local_umask=022</code><br>设定上传后文件的权限默认值，umask的分数指的是“该默认值需要减掉的权限” ，这三个数字依次是user、group和others的权限默认值，故user没有被拿掉任何权限而group与others的权限被拿掉了2（也就是write权限）。<br>Ctrl+O后Enter保存，Ctrl+X存盘退出<br><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%AE%89%E8%A3%85FTP%E6%9C%8D%E5%8A%A1%E5%99%A8/ftp1.PNG" alt=""></p>
+<li><p>使用nano编辑vsftdp的配置文件<br><code>sudo nano /etc/vsftpd.conf</code><br>找到并修改以下行（可使用方向键向下翻页）<br><code>anonymous_enable=NO</code><br>不允许匿名访问<br><code>local_enable=YES</code><br>设定本地用户访问<br><code>write_enable=YES</code><br>设定写权限<br><code>local_umask=022</code><br>设定上传后文件的权限默认值，umask的分数指的是“该默认值需要减掉的权限” ，这三个数字依次是user、group和others的权限默认值，故user没有被拿掉任何权限而group与others的权限被拿掉了2（也就是write权限）。<br>Ctrl+O后Enter保存，Ctrl+X存盘退出<br><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%AE%89%E8%A3%85FTP%E6%9C%8D%E5%8A%A1%E5%99%A8/ftp1.PNG" alt=""></p>
 </li>
 <li><p>重启vsftpd服务<br><code>sudo service vsftpd restart</code></p>
 </li>
 </ol>
 <h1 id="在Windows登录FTP传输文件"><a href="#在Windows登录FTP传输文件" class="headerlink" title="在Windows登录FTP传输文件"></a>在Windows登录FTP传输文件</h1><p>————————————————————————<br>直接使用资源管理器就可以登录FTP</p>
-<p><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%AE%89%E8%A3%85FTP%E6%9C%8D%E5%8A%A1%E5%99%A8/ftp2.PNG" alt=""></p>
+<p><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%AE%89%E8%A3%85FTP%E6%9C%8D%E5%8A%A1%E5%99%A8/ftp2.PNG" alt=""></p>
 <p>输入你的树莓派用户名和密码后就可以进入了</p>
-<p><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%AE%89%E8%A3%85FTP%E6%9C%8D%E5%8A%A1%E5%99%A8/ftp3.PNG" alt=""></p>
+<p><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E6%A0%91%E8%8E%93%E6%B4%BE%E5%AE%89%E8%A3%85FTP%E6%9C%8D%E5%8A%A1%E5%99%A8/ftp3.PNG" alt=""></p>
 <p>直接将文件复制就可以实现Windows和树莓派的文件传输了。</p>
 <p>其实这些教程网上都可以找得到，但是自己记录并总结一下还是很有必要的。踩过的坑不必再踩。</p>
 

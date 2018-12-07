@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="优化算法,整车控制,能量管理,电池管理系统,可用功率估计," />
+  <meta name="keywords" content="电池管理系统,优化算法,整车控制,能量管理,可用功率估计," />
 
 
 
@@ -80,23 +80,23 @@
 
 
 <meta name="description" content="第一次了解动态规划算法是在北大郭炜老师的算法课上。当时只是理解了动态规划算法的优越性主要是其尽可能地避免了问题求解过程中地重复运算。只是没想到后来遇到的一个工程问题（关于最小燃油消耗目标下的功率分配）中，可以运用动态规划算法进行求解。">
-<meta name="keywords" content="优化算法,整车控制,能量管理,电池管理系统,可用功率估计">
+<meta name="keywords" content="电池管理系统,优化算法,整车控制,能量管理,可用功率估计">
 <meta property="og:type" content="article">
 <meta property="og:title" content="简单的动态规划算法与工程应用">
 <meta property="og:url" content="http://yoursite.com/2018/04/28/动态规划算法/index.html">
 <meta property="og:site_name" content="ZHAI&#39;S">
 <meta property="og:description" content="第一次了解动态规划算法是在北大郭炜老师的算法课上。当时只是理解了动态规划算法的优越性主要是其尽可能地避免了问题求解过程中地重复运算。只是没想到后来遇到的一个工程问题（关于最小燃油消耗目标下的功率分配）中，可以运用动态规划算法进行求解。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%951.PNG">
-<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%953.PNG">
-<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%954.PNG">
-<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%955.PNG">
-<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%952.PNG">
-<meta property="og:updated_time" content="2018-07-07T11:31:48.041Z">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E7%AE%80%E5%8D%95%E7%9A%84%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%BA%94%E7%94%A8/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%951.PNG">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E7%AE%80%E5%8D%95%E7%9A%84%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%BA%94%E7%94%A8/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%953.PNG">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E7%AE%80%E5%8D%95%E7%9A%84%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%BA%94%E7%94%A8/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%954.PNG">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E7%AE%80%E5%8D%95%E7%9A%84%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%BA%94%E7%94%A8/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%955.PNG">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E7%AE%80%E5%8D%95%E7%9A%84%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%BA%94%E7%94%A8/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%952.PNG">
+<meta property="og:updated_time" content="2018-12-07T11:37:43.982Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="简单的动态规划算法与工程应用">
 <meta name="twitter:description" content="第一次了解动态规划算法是在北大郭炜老师的算法课上。当时只是理解了动态规划算法的优越性主要是其尽可能地避免了问题求解过程中地重复运算。只是没想到后来遇到的一个工程问题（关于最小燃油消耗目标下的功率分配）中，可以运用动态规划算法进行求解。">
-<meta name="twitter:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%951.PNG">
+<meta name="twitter:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E7%AE%80%E5%8D%95%E7%9A%84%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%BA%94%E7%94%A8/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%951.PNG">
 
 
 
@@ -371,7 +371,7 @@
       
         <p>第一次了解动态规划算法是在北大郭炜老师的算法课上。当时只是理解了动态规划算法的优越性主要是其尽可能地避免了问题求解过程中地重复运算。只是没想到后来遇到的一个工程问题（关于最小燃油消耗目标下的功率分配）中，可以运用动态规划算法进行求解。<br><a id="more"></a></p>
 <h1 id="动态规划介绍"><a href="#动态规划介绍" class="headerlink" title="动态规划介绍"></a>动态规划介绍</h1><p>————————————————————————<br>首先简述一下动态规划算法中的思路，以及其是如何避免了求解过程中的重复运算。</p>
-<p><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%951.PNG" alt=""><br>上图代表了一个简单的问题，图中的箭头代表我可以选择的路径，假设每抵达一个圆就要花费上面所写的相应的数字，如果我想从起点走到终点，即我需要走四步，那我该如何安排我前三步的走法，使我到达终点时总花费最小呢。</p>
+<p><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E7%AE%80%E5%8D%95%E7%9A%84%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%BA%94%E7%94%A8/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%951.PNG" alt=""><br>上图代表了一个简单的问题，图中的箭头代表我可以选择的路径，假设每抵达一个圆就要花费上面所写的相应的数字，如果我想从起点走到终点，即我需要走四步，那我该如何安排我前三步的走法，使我到达终点时总花费最小呢。</p>
 <p>这个问题比较简单，可能一眼就能看出来，那如果是个复杂的问题的话，那就只能通过运算得到了。</p>
 <p>如果是要穷举的话（这是最不需要动脑的一种算法了），就这个简单的问题，那大概需要计算：<br>69+36+75+10=…<br>69+36+69+10=…<br>……<br>……<br>88+36+75+10=…<br>88+36+69+10=…<br>……<br>……</p>
 <p>然后比较出总花费最小的那一个，即为我们的路径。</p>
@@ -379,20 +379,20 @@
 <p>而动态规划算法，就是要避开这些重复的计算。</p>
 <p>这个图用动态规划算法怎么算呢？</p>
 <p>倒着算。首先算出最后一步到终点的花费。最后一步，不管你在哪个圆上，你都要迈上终点，即花费10。即我们计算出了最后一步各个圆到终点的最小花费是min_cost3=[10 10 10]。保存该值。</p>
-<p><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%953.PNG" alt=""></p>
+<p><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E7%AE%80%E5%8D%95%E7%9A%84%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%BA%94%E7%94%A8/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%953.PNG" alt=""></p>
 <p>然后是倒数第二步，倒数第二步就不一样了，我们有很多路可以选，如果站在36上，你可以迈向75，也可以迈向69；如果站在92上，那可以迈向75、69和66。</p>
 <p>我们可以挨着计算，首先，如果我们站在36上，那我们可以迈向75，而从75到终点的min_cost3(1)=10我们已经计算并保存起来了，即目前这条路的cost=75+10=85；同样，我们可以计算出从36迈向69最终到终点的cost为69+min_cost3(2)=69+10=79。</p>
 <p>好了目前我们把站在36上的情况已经计算完毕了，那现在我们可以得出一个结论了，如果在倒数第二步时，我们站在了36上，那我们到终点最小的花费应该是min_cost2(1)=min(85,79)=79。</p>
 <p>那如果我们站在了92上呢，在92上我又三条路可以走，而这三条路到终点的最小cost应该为min_cost2(2)=76；</p>
 <p>同理如果站在77上那最短的路min_cost2(3)=76；</p>
 <p>即第二步到终点的最小花费为min_cost2=[79 76 76]；</p>
-<p><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%954.PNG" alt=""></p>
+<p><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E7%AE%80%E5%8D%95%E7%9A%84%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%BA%94%E7%94%A8/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%954.PNG" alt=""></p>
 <p>接下来我们要计算第二步也就是倒数第三步了，同样地，如果我们站在69的位置，我们的两种选择在这一步的花费分别为36和92，而从36和92到终点的最小花费我们已经计算并且存储分别为min_cost2(1)=79和min_cost2(2)=76；</p>
 <p>即这两条路的总花费分别为36+79=115和92+76=168.比较起来，站在36的位置，最小的花费应该是115。即min_cost1(1)=115。同样可计算min_cost1(2)=115, min_cost1(3)=153。 即min_cost1=[115 115 153]。</p>
-<p><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%955.PNG" alt=""></p>
+<p><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E7%AE%80%E5%8D%95%E7%9A%84%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%BA%94%E7%94%A8/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%955.PNG" alt=""></p>
 <p>现在可以计算第一步了，第一步有三种选择，而这每种选择其到终点的最小花费已经计算完毕了，也就是只需要计算69+min_cost1(1)、69+min_cost1(2)、69+min_cost1(3)。</p>
 <p>取这三个结果的最小值。即最终的min_cost=183。 在每一步计算时都把该步的最终选择标注一下，即可得到该最小花费所需要的路径，如下图所示。</p>
-<p><img src="http://ouz2fu17n.bkt.clouddn.com/blog/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%952.PNG" alt=""></p>
+<p><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E7%AE%80%E5%8D%95%E7%9A%84%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%BA%94%E7%94%A8/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%952.PNG" alt=""></p>
 <p>在这整个过程中，任意一个状态点到终点的最小cost都得到了计算并且将结果进行存储，在下一步计算的时候可以直接调用存储结果，这样可以降低了计算规模与计算量。</p>
 <h1 id="如何用动态规划解决工程问题"><a href="#如何用动态规划解决工程问题" class="headerlink" title="如何用动态规划解决工程问题"></a>如何用动态规划解决工程问题</h1><p>————————————————————————<br>对于工程问题，如果该工程问题的状态值可以离散，输入也可以离散，每一步的cost也可求，对于cost的计算也很明确的话，那该工程问题就可以针对cost通过动态规划优化出最佳路径。</p>
 <p>首先第一点，确定优化的目标是什么，最小的油耗？最近的路程？最短的时间？这个概念也就是上题中提到过的花费cost。</p>
@@ -421,13 +421,13 @@
       
         <div class="post-tags">
           
+            <a href="/tags/电池管理系统/" rel="tag"># 电池管理系统</a>
+          
             <a href="/tags/优化算法/" rel="tag"># 优化算法</a>
           
             <a href="/tags/整车控制/" rel="tag"># 整车控制</a>
           
             <a href="/tags/能量管理/" rel="tag"># 能量管理</a>
-          
-            <a href="/tags/电池管理系统/" rel="tag"># 电池管理系统</a>
           
             <a href="/tags/可用功率估计/" rel="tag"># 可用功率估计</a>
           

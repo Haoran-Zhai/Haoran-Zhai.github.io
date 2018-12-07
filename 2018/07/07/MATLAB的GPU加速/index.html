@@ -87,12 +87,12 @@
 <meta property="og:site_name" content="ZHAI&#39;S">
 <meta property="og:description" content="前几天跑动态规划算法，尽管开了CPU六核并行运算，但是由于数据量巨大、速度还是非常慢，所以考虑了能不能用GPU加速计算，毕竟MATLAB并行计算工具箱还是挺好用的。当然这个成功不成功不重要（实际上没有成功、后面会提到），感觉MATLAB的GPU加速是个很有意思也值得总结的内容，所以就把最近了解到的东西记录一下。 首先贴一下MATLAB官网指南，实际上很多问题都能在MATLAB官网找到答案，如果问题">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/gpu%E5%8A%A0%E9%80%9F/Matlab+GPU.JPG">
-<meta property="og:updated_time" content="2018-07-07T11:31:18.571Z">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/MATLAB%E7%9A%84GPU%E5%8A%A0%E9%80%9F/Matlab%2BGPU.JPG">
+<meta property="og:updated_time" content="2018-12-07T11:35:07.191Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MATLAB的GPU加速">
 <meta name="twitter:description" content="前几天跑动态规划算法，尽管开了CPU六核并行运算，但是由于数据量巨大、速度还是非常慢，所以考虑了能不能用GPU加速计算，毕竟MATLAB并行计算工具箱还是挺好用的。当然这个成功不成功不重要（实际上没有成功、后面会提到），感觉MATLAB的GPU加速是个很有意思也值得总结的内容，所以就把最近了解到的东西记录一下。 首先贴一下MATLAB官网指南，实际上很多问题都能在MATLAB官网找到答案，如果问题">
-<meta name="twitter:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/gpu%E5%8A%A0%E9%80%9F/Matlab+GPU.JPG">
+<meta name="twitter:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/MATLAB%E7%9A%84GPU%E5%8A%A0%E9%80%9F/Matlab%2BGPU.JPG">
 
 
 
@@ -375,7 +375,7 @@
 <p>GPU也可以直接在GPU生成变量：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">B = gpuArray.rand(1,100);</span><br><span class="line">C = zeros(10,&apos;gpuArray&apos;);</span><br></pre></td></tr></table></figure></p>
 <p>将GPU中的数据传回CPU：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C = gather(C);</span><br></pre></td></tr></table></figure></p>
 <p>GPU计算支持线性运算，快速傅里叶变换等等，但是部分运算是不支持的。实现需要查看到底GPU支持的运算种类是什么样的。<br>下图是一个赋值的示例，可以看得出GPU中变量特殊的类型gpuArray：</p>
-<p><img src="http://ouz2fu17n.bkt.clouddn.com/blog/gpu%E5%8A%A0%E9%80%9F/Matlab+GPU.JPG" alt=""></p>
+<p><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/MATLAB%E7%9A%84GPU%E5%8A%A0%E9%80%9F/Matlab%2BGPU.JPG" alt=""></p>
 <p>其实上面都不是重点，重点是有一个很基础的事情我当时没有搞清楚，GPU加速是加速矩阵计算的。矩阵越大、加速效果越好。当大矩阵加多循环的时候，加速效果非常明显，但是如果是小矩阵、多循环，不但不会加速，还会导致变慢。因为数据传输也需要时间，何况小矩阵的情况下，gpu的优势还有可能为负。</p>
 <p>当初想到GPU加速计算的时候，完全没有考虑过MATLAB中GPU加速的原理和场景，实际上不是很适用于我的需求。后来在Mathworks网站逛了逛才发现这个问题。Mathworks网站有很多案例和效果分享，对于了解使用场景、加速效果等等都非常有帮助。</p>
 <p>不过GPU加速是很有趣的问题，计划多了解一下相关的原理和程序。</p>

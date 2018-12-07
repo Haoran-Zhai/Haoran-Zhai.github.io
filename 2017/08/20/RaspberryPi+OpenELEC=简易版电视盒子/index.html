@@ -87,16 +87,16 @@
 <meta property="og:site_name" content="ZHAI&#39;S">
 <meta property="og:description" content="网上有很多教程推荐把树莓派刷上Kodi变成一个简易版电视盒子，试了一下真的特别好用，良心推荐。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/openelec/openelec1.PNG">
-<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/openelec/openelec2.jpg">
-<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/openelec/openelec3.png">
-<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/openelec/openelec5.PNG">
-<meta property="og:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/openelec/openelec6.PNG">
-<meta property="og:updated_time" content="2017-11-24T12:09:43.692Z">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/RaspberryPi%2BOpenELEC%3D%E7%AE%80%E6%98%93%E7%89%88%E7%94%B5%E8%A7%86%E7%9B%92%E5%AD%90/openelec1.PNG">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/RaspberryPi%2BOpenELEC%3D%E7%AE%80%E6%98%93%E7%89%88%E7%94%B5%E8%A7%86%E7%9B%92%E5%AD%90/openelec2.jpg">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/RaspberryPi%2BOpenELEC%3D%E7%AE%80%E6%98%93%E7%89%88%E7%94%B5%E8%A7%86%E7%9B%92%E5%AD%90/openelec3.png">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/RaspberryPi%2BOpenELEC%3D%E7%AE%80%E6%98%93%E7%89%88%E7%94%B5%E8%A7%86%E7%9B%92%E5%AD%90/openelec5.PNG">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/RaspberryPi%2BOpenELEC%3D%E7%AE%80%E6%98%93%E7%89%88%E7%94%B5%E8%A7%86%E7%9B%92%E5%AD%90/openelec6.PNG">
+<meta property="og:updated_time" content="2018-12-07T11:46:24.064Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="RaspberryPi+OpenELEC=简易版电视盒子">
 <meta name="twitter:description" content="网上有很多教程推荐把树莓派刷上Kodi变成一个简易版电视盒子，试了一下真的特别好用，良心推荐。">
-<meta name="twitter:image" content="http://ouz2fu17n.bkt.clouddn.com/blog/openelec/openelec1.PNG">
+<meta name="twitter:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/RaspberryPi%2BOpenELEC%3D%E7%AE%80%E6%98%93%E7%89%88%E7%94%B5%E8%A7%86%E7%9B%92%E5%AD%90/openelec1.PNG">
 
 
 
@@ -371,12 +371,12 @@
       
         <p>网上有很多教程推荐把树莓派刷上Kodi变成一个简易版电视盒子，试了一下真的特别好用，良心推荐。<br><a id="more"></a><br>树莓派能刷的内置Kodi的系统有很多版本，综合了各种信息最后没有选择Raspbmc而是选择了系统更加小巧、运行更加迅速、需求资源更少的OpenELEC。因为上次32G的TF卡刷了Rsapbian，而OpenELEC也就几百M并不需要那么大的空间，故从家中的旧手机中找了一张CLASS4-4GB（推荐CLASS10的卡，8GB）的TF卡安装OpenELEC。如果只有一张TF卡的话，还是不推荐刷OpenELEC，毕竟树莓派也不能只作电视盒子用，采用在Raspbian上安装Kodi的话推荐<a href="http://www.cnblogs.com/haochuang/p/7089122.html" target="_blank" rel="noopener">这篇博文</a>。</p>
 <p>整个过程中树莓派、TF卡（读卡器）、显示器和HDMI线当然是必须的，最开始配置的时候用了一下鼠标，基本上没什么需要特殊准备的东西。</p>
-<p>下载<a href="http://openelec.tv/get-openelec" target="_blank" rel="noopener">OpenELEC</a>，找到适合的树莓派版本下载然后解压得到img文件。<br><img src="http://ouz2fu17n.bkt.clouddn.com/blog/openelec/openelec1.PNG" alt=""></p>
+<p>下载<a href="http://openelec.tv/get-openelec" target="_blank" rel="noopener">OpenELEC</a>，找到适合的树莓派版本下载然后解压得到img文件。<br><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/RaspberryPi%2BOpenELEC%3D%E7%AE%80%E6%98%93%E7%89%88%E7%94%B5%E8%A7%86%E7%9B%92%E5%AD%90/openelec1.PNG" alt=""></p>
 <p>像之前安装Raspbian一样，用Win32DiskImager把OpenELEC烧录到TF卡里。</p>
 <p>然后把烧录了OpenELEC的TF卡插入树莓派，连接好网线（当然也可以后来连接无线）、显示器（显示器请在树莓派通电前就保持开启，如果树莓派通电之后再开启显示器有可能出现HDMI无信号的提示）和电源。</p>
 <p>进入到OpenELEC页面后，可以先暂时使用鼠标进行初期的设置操作。没有什么特殊的设置，注意开启SSH就行。默认系统是英文的，使用中文需要到系统设置中先将皮肤中的字体更改为Arial然后将语言更改为Chinese(Simple)。</p>
 <p>一直用鼠标就太不方便了，从AppStore下载Kodi Remote（还有好多App可以实现Kodi遥控）。进入Kodi，直接点击发现的设备连接就行，连接成功后可以直接使用手机操控。</p>
-<p><img src="http://ouz2fu17n.bkt.clouddn.com/blog/openelec/openelec2.jpg" alt=""><br><img src="http://ouz2fu17n.bkt.clouddn.com/blog/openelec/openelec3.png" alt=""><br>当然我们最终的目的还是拥有一个电视盒子而不是数码相框，可以播放爱奇艺、搜狐、优酷等主流视频网站的视频。这就需要去下载中文插件库进行相关插件的下载与更新。中文插件库的[下载页面]<a href="https://github.com/taxigps/xbmc-addons-chinese)，直接拉到How" target="_blank" rel="noopener">https://github.com/taxigps/xbmc-addons-chinese)，直接拉到How</a> to use下载最新的插件库就行。下载后将zip文件拷贝到U盘中连接到树莓派上，安装操作步骤操作。<br><img src="http://ouz2fu17n.bkt.clouddn.com/blog/openelec/openelec5.PNG" alt=""><br><img src="http://ouz2fu17n.bkt.clouddn.com/blog/openelec/openelec6.PNG" alt=""></p>
+<p><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/RaspberryPi%2BOpenELEC%3D%E7%AE%80%E6%98%93%E7%89%88%E7%94%B5%E8%A7%86%E7%9B%92%E5%AD%90/openelec2.jpg" alt=""><br><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/RaspberryPi%2BOpenELEC%3D%E7%AE%80%E6%98%93%E7%89%88%E7%94%B5%E8%A7%86%E7%9B%92%E5%AD%90/openelec3.png" alt=""><br>当然我们最终的目的还是拥有一个电视盒子而不是数码相框，可以播放爱奇艺、搜狐、优酷等主流视频网站的视频。这就需要去下载中文插件库进行相关插件的下载与更新。中文插件库的[下载页面]<a href="https://github.com/taxigps/xbmc-addons-chinese)，直接拉到How" target="_blank" rel="noopener">https://github.com/taxigps/xbmc-addons-chinese)，直接拉到How</a> to use下载最新的插件库就行。下载后将zip文件拷贝到U盘中连接到树莓派上，安装操作步骤操作。<br><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/RaspberryPi%2BOpenELEC%3D%E7%AE%80%E6%98%93%E7%89%88%E7%94%B5%E8%A7%86%E7%9B%92%E5%AD%90/openelec5.PNG" alt=""><br><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/RaspberryPi%2BOpenELEC%3D%E7%AE%80%E6%98%93%E7%89%88%E7%94%B5%E8%A7%86%E7%9B%92%E5%AD%90/openelec6.PNG" alt=""></p>
 <p>根据安装步骤安装就可以了，首先安装中文插件库，再在中文插件库中选择具体插件安装。更详细的设置步骤可以参考<a href="http://blogger.gtwang.org/2015/03/openelec-xbmc-kodi-chinese-addons.html" target="_blank" rel="noopener">这篇博文</a>。</p>
 <p>经过测试，发现里面大部分插件还是不错的，但是优酷视频插件不提供搜索功能，而YouKu TV虽然界面精美但是出现了无法解析播放源的错误。其他的体验都还不错，百度云插件还未尝试。</p>
 <p>以后打算去淘宝淘一个便宜的投影仪，连接树莓派看电影用，方案实施后再更。</p>
