@@ -79,19 +79,19 @@
 
 
 
-<meta name="description" content="前几天跑动态规划算法，尽管开了CPU六核并行运算，但是由于数据量巨大、速度还是非常慢，所以考虑了能不能用GPU加速计算，毕竟MATLAB并行计算工具箱还是挺好用的。当然这个成功不成功不重要（实际上没有成功、后面会提到），感觉MATLAB的GPU加速是个很有意思也值得总结的内容，所以就把最近了解到的东西记录一下。 首先贴">
+<meta name="description" content="前几天跑动态规划算法，尽管开了CPU六核并行运算，但是由于数据量巨大、速度还是非常慢，所以考虑了能不能用GPU加速计算，毕竟MATLAB并行计算工具箱还是挺好用的。当然这个成功不成功不重要（实际上没有成功、后面会提到），感觉MATLAB的GPU加速是个很有意思也值得总结的内容，所以就把最近了解到的东西记录一下。">
 <meta name="keywords" content="MATLAB,GPU并行计算">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MATLAB的GPU加速">
 <meta property="og:url" content="http://yoursite.com/2018/07/07/MATLAB的GPU加速/index.html">
 <meta property="og:site_name" content="ZHAI&#39;S">
-<meta property="og:description" content="前几天跑动态规划算法，尽管开了CPU六核并行运算，但是由于数据量巨大、速度还是非常慢，所以考虑了能不能用GPU加速计算，毕竟MATLAB并行计算工具箱还是挺好用的。当然这个成功不成功不重要（实际上没有成功、后面会提到），感觉MATLAB的GPU加速是个很有意思也值得总结的内容，所以就把最近了解到的东西记录一下。 首先贴一下MATLAB官网指南，实际上很多问题都能在MATLAB官网找到答案，如果问题">
+<meta property="og:description" content="前几天跑动态规划算法，尽管开了CPU六核并行运算，但是由于数据量巨大、速度还是非常慢，所以考虑了能不能用GPU加速计算，毕竟MATLAB并行计算工具箱还是挺好用的。当然这个成功不成功不重要（实际上没有成功、后面会提到），感觉MATLAB的GPU加速是个很有意思也值得总结的内容，所以就把最近了解到的东西记录一下。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/MATLAB%E7%9A%84GPU%E5%8A%A0%E9%80%9F/Matlab%2BGPU.JPG">
-<meta property="og:updated_time" content="2018-12-07T11:35:07.191Z">
+<meta property="og:updated_time" content="2018-12-07T12:22:57.593Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MATLAB的GPU加速">
-<meta name="twitter:description" content="前几天跑动态规划算法，尽管开了CPU六核并行运算，但是由于数据量巨大、速度还是非常慢，所以考虑了能不能用GPU加速计算，毕竟MATLAB并行计算工具箱还是挺好用的。当然这个成功不成功不重要（实际上没有成功、后面会提到），感觉MATLAB的GPU加速是个很有意思也值得总结的内容，所以就把最近了解到的东西记录一下。 首先贴一下MATLAB官网指南，实际上很多问题都能在MATLAB官网找到答案，如果问题">
+<meta name="twitter:description" content="前几天跑动态规划算法，尽管开了CPU六核并行运算，但是由于数据量巨大、速度还是非常慢，所以考虑了能不能用GPU加速计算，毕竟MATLAB并行计算工具箱还是挺好用的。当然这个成功不成功不重要（实际上没有成功、后面会提到），感觉MATLAB的GPU加速是个很有意思也值得总结的内容，所以就把最近了解到的东西记录一下。">
 <meta name="twitter:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/MATLAB%E7%9A%84GPU%E5%8A%A0%E9%80%9F/Matlab%2BGPU.JPG">
 
 
@@ -365,7 +365,7 @@
       
 
       
-        <p>前几天跑动态规划算法，尽管开了CPU六核并行运算，但是由于数据量巨大、速度还是非常慢，所以考虑了能不能用GPU加速计算，毕竟MATLAB并行计算工具箱还是挺好用的。<br>当然这个成功不成功不重要（实际上没有成功、后面会提到），感觉MATLAB的GPU加速是个很有意思也值得总结的内容，所以就把最近了解到的东西记录一下。</p>
+        <p>前几天跑动态规划算法，尽管开了CPU六核并行运算，但是由于数据量巨大、速度还是非常慢，所以考虑了能不能用GPU加速计算，毕竟MATLAB并行计算工具箱还是挺好用的。<br>当然这个成功不成功不重要（实际上没有成功、后面会提到），感觉MATLAB的GPU加速是个很有意思也值得总结的内容，所以就把最近了解到的东西记录一下。<br><a id="more"></a></p>
 <p>首先贴一下<a href="https://ww2.mathworks.cn/help/distcomp/gpu-computing.html" target="_blank" rel="noopener">MATLAB官网指南</a>，实际上很多问题都能在MATLAB官网找到答案，如果问题得不到解决在这个网站也能得到很多启发。</p>
 <p>MATLAB的GPU加速方法实际上就是将内存中的数据转移到显存中，本来由CPU完成的计算换由GPU完成。</p>
 <p>而且并不是所有的显卡都支持MATLAB加速，只有NVDIA的显卡可以，想查看电脑显卡属性的话，可以在设备管理器-显示适配器中查看。也可以下载<a href="https://www.techpowerup.com/gpuz/" target="_blank" rel="noopener">GPU-Z</a>这个小工具进行GPU利用率、显存大小以及利用率等等的查看。</p>
@@ -420,6 +420,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/09/小提琴琴弦的调制原理/" rel="prev" title="小提琴琴弦的调制原理">
+                小提琴琴弦的调制原理 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -498,7 +502,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -509,7 +513,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -520,7 +524,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-count">20</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
