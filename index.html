@@ -262,6 +262,202 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/03/有序数据的聚类方法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ZHAI">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZHAI'S">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/03/有序数据的聚类方法/" itemprop="url">有序数据的聚类方法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-03T21:41:25+08:00">
+                2019-03-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/03/03/有序数据的聚类方法/" class="leancloud_visitors" data-flag-title="有序数据的聚类方法">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>最近从一篇论文中（参考文献[3]）得到了一点灵感来解决一个驱动模式分类的问题，该作者用了三种算法来解决此问题。首先采用山峰聚类（Mountain Clustering）算法确定聚类中心的数目，因为对于随机一段驾驶任务来说，类别的数目是不确定的；之后用模糊C均值聚类（Fussy C-Means Clustering，FCM）算法对驱动模式进行分类，最后基于相似度度量将相邻且相似的聚类进行合并。该作者对其算法实现的细节提及甚少，在进行算法复现的时候，发现一个问题，一般不管是FCM或者是Moutain Clustering，这些算法采用的数据都是无序的。也就是说，样本的出现顺序与其类别归属是无关的。但是在驱动模式分类的这个问题中，需要将连续的一段数据识别为几类，将一段连续的驾驶数据分割为路段1、路段2……路段n，位于5.1-5.2km处的驾驶特征点不可能被划分到范围为1-3km的路段1中，但是就FCM算法来说，只要该特征点与路段1中的特征匹配，就会被划归路段1中，但对于此问题这实际上是错误的。</p>
+<p>该作者解决此问题的方式也非常简单，就是将样本序列也作为一个特征向量加入了样本中（因为作者对这个问题的处理方法完全没有提及，只是在样本点的特征值发现了k这个序列值变量，估计作者实际上就是这么解决的这个问题）。这就非常诡异了。这么做实际上根本没有办法做到准确的归类，特别是路段边界的位置，非常容易造成路段空间位置上的重合。最后也没有搞清楚这篇论文采用的具体手段。所以在查阅了相关资料之后，打算采用有序样本聚类的思路来解决这个问题。</p>
+<p>关于有序样本的聚类问题，相关帖子和代码很少。故整理一下相关并提供一组MATLAB参考代码。</p>
+<p>有序样本的概念由Fisher在1958年提出，下面介绍一下两种解决此聚类问题的算法思路。</p>
+<h1 id="最优分割法"><a href="#最优分割法" class="headerlink" title="最优分割法"></a>最优分割法</h1><p>————————————————————————<br>最优分割的目标是得到有序样本数据最优的分类方法，使类内的数据特征最为接近而类间数据特征差异最大。<br>假设数据样本为$x_1, x_2, x_3,…,x_n$, 需要将这$n$条数据分为$k$类，这个分类问题记为$p(n,k)$。其中的某一类用$G_{ij}$表示，该类内包含的数据范围为$x_i,x_{i+1},…,x_{j}$。<br>首先定义类内的直径$D_{ij}$<br>$$ D_{ij} = \sum ^{j}_{l=i}\left|\left| x_{l}-\overline {x_{ij}}\right|\right| _{2} $$<br>其中$x_{ij}$为类$G_{ij}$的中心点：<br>$$ \overline {x_{ij}}=\left(j-i+1\right) \sum ^{j}_{l=i}x_{l} $$<br>所谓的类内直径，也就是类内各点到中心点的欧氏距离之和。<br>所以最优分割的目标，就是使各个类内直径之和最小，记目标函数为$e[p(n,k)]$。分割点为$i_1,i_2,…,i_k$：<br>$$ e[p(n,p)]=\sum ^{k}_{j=1}D\left( i_j,i_{j+1}-1\right) $$<br>而最优的分割方案，就是求解使上述目标函数值最小的分割点组合。<br>求解的方案由很多种，包括遗传算法等都可以用来进行最优方案的求解。在样本序列不是特别大的情况下，采用动态规划算法的思路可以求解此问题。因为对于此问题，若$i_l$分割点确定为最优，则$i_l$到$i_k$的最优方案全部可以确定。<br>matlab参考代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">% Author: Zhai</span><br><span class="line">% Date: 2019/3/2</span><br><span class="line">%------------------------------%</span><br><span class="line"></span><br><span class="line">clear</span><br><span class="line">load x</span><br><span class="line"></span><br><span class="line">k = 12; %分类的数目</span><br><span class="line">n = length(x); %样本的数据数目</span><br><span class="line">p = zeros(n,k); %存储分类点的索引</span><br><span class="line">e = 1e6*ones(n,k); %初始化e存储矩阵</span><br><span class="line"></span><br><span class="line">e_tmp = 1e6*ones(n,1); %临时存储变量</span><br><span class="line"></span><br><span class="line">for i = k:n</span><br><span class="line">    center = sum(x(i:n))/(n-i+1)*ones(n-i+1,1);</span><br><span class="line">    e(i,k) = sum((x(i:n)-center).^2);</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">% for循环的部分要特别注意，因为样本分割点的位置是存在约束的。第j个样本分割点不可能位于大于n-(k-j)的位置，同样也不可能位于小于j的位置。</span><br><span class="line">for j=k-1:-1:1</span><br><span class="line">    for i=j:n-(k-j)</span><br><span class="line">        for u=(i+1):(n-k+j+1)</span><br><span class="line">            center = sum(x(i:u-1))/(u-i)*ones(u-i,1);</span><br><span class="line">            e_tmp(u) = sum((x(i:u-1)-center).^2) + e(u,j+1);</span><br><span class="line">        end</span><br><span class="line">        [e(i,j),tmp] = min(e_tmp(i+1:n-k+j+1));</span><br><span class="line">        p(i,j) = i+tmp;</span><br><span class="line">    end</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">opt_point = zeros(k,1);</span><br><span class="line">opt_point(1) = 1;</span><br><span class="line">for j=2:k</span><br><span class="line">    opt_point(j) = p(opt_point(j-1),j-1);</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
+<h1 id="层次聚类法"><a href="#层次聚类法" class="headerlink" title="层次聚类法"></a>层次聚类法</h1><p>————————————————————————<br>层次聚类是聚类算法比较常见的一种，其稍加改造就可以应用于有序样本聚类中。一般的层次聚类算法需要对计算空间任意两个簇的距离，并将距离最近的两个簇合并。如果将算法修改为，计算有序样本的相邻样本簇的距离，并将最近的簇合并。如此便可以利用层次聚类解决该问题。<br>如下是一个经典有序样本问题——关于男孩体重增长的例子：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">年龄</th>
+<th style="text-align:center">1</th>
+<th style="text-align:center">2</th>
+<th style="text-align:center">3</th>
+<th style="text-align:center">4</th>
+<th style="text-align:center">5</th>
+<th style="text-align:center">6</th>
+<th style="text-align:center">7</th>
+<th style="text-align:center">8</th>
+<th style="text-align:center">9</th>
+<th style="text-align:center">10</th>
+<th style="text-align:center">11</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">增加重量</td>
+<td style="text-align:center">9.3</td>
+<td style="text-align:center">1.8</td>
+<td style="text-align:center">1.9</td>
+<td style="text-align:center">1.7</td>
+<td style="text-align:center">1.5</td>
+<td style="text-align:center">1.3</td>
+<td style="text-align:center">1.4</td>
+<td style="text-align:center">2.0</td>
+<td style="text-align:center">1.9</td>
+<td style="text-align:center">2.3</td>
+<td style="text-align:center">2.1</td>
+</tr>
+</tbody>
+</table>
+<p>层次聚类的过程如下所示：<br><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E6%9C%89%E5%BA%8F%E6%A0%B7%E6%9C%AC%E8%81%9A%E7%B1%BB/%E5%B1%82%E6%AC%A1%E8%81%9A%E7%B1%BB.JPG" alt=""><br>（该部分代码过段时间再补充）</p>
+<blockquote>
+<p>本文主要参考文献：<br>[1] 方开泰. 有序样品的一些聚类方法[J]. 应用数学学报, 1982, 5(1):94-101.<br>[2] 石建辉. 基于遗传算法的有序样本聚类及其应用[J]. 统计与决策, 2010(23):19-21.<br>[3] H. Yu, F. Tseng and R. McGee, “Driving pattern identification for EV range estimation,” 2012 IEEE International Electric Vehicle Conference, Greenville, SC, 2012, pp. 1-7.</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/09/小提琴琴弦的调制原理/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -365,88 +561,14 @@
 
       
         
-          
-            <p>这篇东西其实是本科上《机械振动》这门课的时候写的课程大作业，当时老师给了几个题目，这个还挺有意思。前几天在网盘里无意中看到了，就发上来吧。那个时候写的课程作业格式也不太规范，有的图和引用当时也没有记录来源，可能有的理解不完全正确，现在也没有再继续了解过关于振动的相关知识了。凑活一看。<br>————————————————————————</p>
-<p>本文第一部分是关于小提琴相关构造的一些介绍。第二部分探究了小提琴的发声原理以及琴弦的振动模型，得到了影响琴弦固有频率的因素。接下来第三章用数学和振动相关知识解释了关于音律背后的理论依据，而且对小提琴调音过程中常提到的关于双音和谐做了简单的直观的解释。最后介绍了小提琴调音的过程，并根据前面探究过的纯五度和同度和谐以及调音操作做了详细的理论解释。</p>
-<h1 id="小提琴的构造与发声过程"><a href="#小提琴的构造与发声过程" class="headerlink" title="小提琴的构造与发声过程"></a>小提琴的构造与发声过程</h1><p>————————————————————————<br>小提琴属于四弦的弓弦乐器，是现代管弦乐团弦乐组中最重要的乐器，一般在管弦乐作品中会分成第一小提琴与第二小提琴两个声部。作为现代弦乐器中最具分量的乐器，小提琴主要的特点在于其辉煌的声音、高度的演奏技巧和丰富、广泛的表现力。又被称作为乐器中的女王。<br>小提琴包括琴身（包括琴头、琴颈、指板和共鸣箱）、琴弦系统（包括弦轴、挂弦板、琴马和琴弦）和琴弓。琴身为木制结构，以槭木和云杉为原材料配合制造的音色最佳；琴弦一般为金属丝，也有一部分是的合成纤维和羊肠材料；琴弓由马尾毛制成。下图为小提琴结构图片[1]：<br><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%B0%8F%E6%8F%90%E7%90%B4%E7%9A%84%E8%B0%83%E9%9F%B3%E5%8E%9F%E7%90%86/Violin1.jpg" alt=""><br>小提琴由许许多多的零件构成，可以说是“麻雀虽小，五脏俱全”。小提琴的发音来源于用弓拉琴弦，再通过琴码传递振动给共鸣箱。琴弦和琴码的制作材料、安装位置、振动特性等因素对小提琴的发音起着决定性的作用。<br>小提琴拉弦或拨弦使琴弦发生振动，振动由琴码传到琴身面板。琴身内部的空气藉此产生振动而共鸣发声，将振动放大后通过空气传至人耳，人耳便可听到优美的乐声。<br>四条琴弦自小提琴的底部延伸，跨过琴马，至指板尾端以弦轸固定。调音方法是扭动弦轸以调整琴弦的松紧。</p>
-<h1 id="小提琴琴弦的振动分析"><a href="#小提琴琴弦的振动分析" class="headerlink" title="小提琴琴弦的振动分析"></a>小提琴琴弦的振动分析</h1><p>————————————————————————</p>
-<h2 id="自激振动-2"><a href="#自激振动-2" class="headerlink" title="自激振动[2]"></a>自激振动[2]</h2><p>自激振动的物理解释：存在一个与系统有关的外部恒定的能源，自激振动靠系统外部能源补充能量，使运动的系统与恒定能源之间产生交变力，这个交变力在运动方程中体现为阻尼项。当系统振动较小时，方程中的阻尼阻尼项成为负阻尼，使系统周期性地从恒定能源吸收能量而使运动增长；当运动增长到一定程度，方程中地阻尼项成为正阻尼而使运动衰减。当系统在一个周期内损失的能量和吸入的能量相等时，系统呈现稳态的周期运动。这种稳态周期运动就成为自激振动，或简称自振。</p>
-<p>自激振动由于能源恒定而不同于强迫振动。系统依靠自身运动状态的反馈作用调节能量输入，以维持不衰减的持续振动。也就是说，在自激振动中，外界恒定的能源给予振动系统的交变力是由运动本身产生或控制的，运动一旦停止，交变力也随之消失。而在强迫振动中，交变力是由外部能源独立产生的，它不依赖于运动，即使运动消失了，交变力仍可存在。因此，强迫振动的频率完全决定于外加激励频率，而自激振动的频率则很接近于系统的固有频率。另外，自激振动与保守系统的自由振动也不相同。保守系统的自由振动的振幅由初始条件确定，而自激振动的振幅与初始条件无关，它决定于系统本身的参数。</p>
-<p>小提琴琴弦的振动就属于自激振动的范畴，琴弓的拉动为琴弦的振动提供连续不断的能源，使琴弦发出稳定、持续、响亮的声音。</p>
-<h2 id="小提琴琴弦的振动分析-1"><a href="#小提琴琴弦的振动分析-1" class="headerlink" title="小提琴琴弦的振动分析"></a>小提琴琴弦的振动分析</h2><p>琴弓与琴弦之间的相互作用可以用“黏滑”来描述：当琴弦与琴弓的速度相等时，就与琴弓黏在一起做匀速运动；当琴弦的弹性恢复力增大，琴弦就往相反的方向滑动，这就是“黏滑”运动（stick-slip）。 当琴弦与琴弓“黏”在一起做匀速运动时，琴弦振动的幅值由琴弓的速度和琴弓到琴马的相对距离决定：振动幅值与琴弓的速度成正比，与琴弓到琴马的相对距离成反比（相对距离=琴弓到琴马的距离/弦长）。琴弓与琴弦之间存在干摩擦力，当琴弓通过摩擦力咬住（即黏、stick）琴弦一同向右运动时，琴弦被琴弓带动作单方向的匀速运动。随着琴弦变形的增大，弹性恢复力也不断增大，当琴弦移动到一定程度，弹性恢复力足以克服摩擦力时，琴弦即被迫脱离琴弓向左滑动，起先在弹性恢复力下加速，超过平衡位置时开始减速，直到相对速度减到等于零时，琴弦再次被琴弓咬住向右运动，这种黏着-滑动-再黏着的过程重复发生，成了周期性的运动。</p>
-<p>实际上，琴弓奏琴时所对琴弦的驱动力也并不是恒定不变的，经过一些论文与实验验证，这个驱动力的形状是呈锯齿形的[3]。</p>
-<h2 id="小提琴弦的简化振动模型"><a href="#小提琴弦的简化振动模型" class="headerlink" title="小提琴弦的简化振动模型"></a>小提琴弦的简化振动模型</h2><p>小提琴弦的振动可以归为自激振动模型中，其振动频率与激励的频率没有太大关系而很大程度上接近小提琴的固有频率。而小提琴弦的弹拨振动模型是较为简单的探究小提琴弦的张力、长度、材料等等因素对小提琴琴弦振动频率影响的方法。故我们就建立连续体的弦振动模型来探究小提琴弦振动的固有频率。<br>设有一个根琴弦张紧于手指和琴马之间，两固定点连线方向取为$x$轴（向右为正），与$x$轴垂直的方向取为$y$轴。 弦的单位长度质量为$ρ$，在横向分布力$f\left(x,y\right)$作用下作横向振动，张力为$T\left(x,y\right)$，跨长为$L$，弦$x$处的横向位移函数为$y=y\left(x,y\right)$。<br>取微段弦线单元体$dx$，假设弦作微小横向振动，则由牛顿定律得:<br>$$ \rho dx\dfrac {\partial ^{2}y}{\partial x^{2}}=f\left( x,t\right) dx+\left( T+\dfrac {\partial T}{\partial x}\right)\sin \left( \theta +\dfrac {\partial \theta }{\partial x}dx\right) -T\sin \theta $$<br>考虑到微振动的假设，有：<br>$$ \theta \approx \sin \theta \approx \tan \theta = \dfrac {\partial y}{\partial x} $$<br>故有：<br>$$ \rho dx\dfrac {\partial ^{2}y}{\partial t^{2}}=f\left( x,t\right) dx+\left( \dfrac {\partial y}{\partial x}+\dfrac {\partial ^{2}y}{\partial x^{2}}dx\right)+\dfrac {\partial T}{\partial x}\dfrac {\partial y}{\partial x}dx+\dfrac {\partial T}{\partial x}\dfrac {\partial y}{\partial x} $$<br>消去相应项，并不计$dx$的二次项，两边同时除以$dx$以后，整理得:<br>$$ \rho \dfrac {\partial ^{2}y}{\partial t^{2}}-\dfrac {\partial }{\partial x}\left( T\dfrac {\partial y}{\partial x}\right) =f\left( x,t\right), \left(0&lt;x&lt;L\right)  \tag{①}$$<br>式中，$ρ=ρ\left(x\right)$, $T=T\left(x,t\right)$, $y=y\left(x, t\right)$。<br>方程①为弦横向振动的偏微分方程。当然，琴弦在两端处的位移为零，即：<br>$$ y\left( 0,t\right) =y\left( L,t\right) =0 \tag{②}$$<br>通常称为边界条件。方程①和②构成了偏微分方程的边界值问题。<br>弦的性质可以看成是均匀的，即弦的单位长度质量$ρ(x)=ρ$，设横向位移$y(x,t)$为小量，弦内张力$T$可以视为常量，则方程①简化为:<br>$$ \rho \dfrac {\partial ^{2}y}{\partial t^{2}}-T\dfrac {\partial ^{2}y}{\partial x^{2}}=f\left( x,t\right)  $$<br>如果$f(x,t)=0$，则弦的自由振动微分方程为:<br>$$ \dfrac {\partial ^{2}y}{\partial t^{2}}=a^{2}\dfrac {\partial ^{2}y}{\partial x^{2}} \tag{③}$$<br>其中$a=\sqrt {\dfrac {T}{\rho }}$。<br>这里$a$表示弹性波沿弦向的传播速度。通常称为波动方程。<br>用数学的语言讲，描述弦振动的位移函数$y(x,t)$在时间和空间上是分离的，即边界值问题的解可以写成下面的形式:<br>$$ y\left( x,t\right) =Y\left( x\right) F\left( t\right) \tag{④}$$<br>式中，$Y(x)$表示弦的振动位形，只取决于变量$x$；<br>$F(t)$表示弦的振动规律，只依赖于时间$t$。<br>将式④代入方程③，得:<br>$$ \dfrac {1}{F\left( t\right) }\dfrac {dF^{2}\left( t\right) }{dt^{2}}=a^{2}\dfrac {1}{Y\left( x\right) }\dfrac {d^{2}Y\left( x\right) }{dx^{2}} \tag{⑤}$$<br>上式左端只依赖$t$，右端只依赖于$x$，所以要使上式对任意的$t$和$x$都成立，必然是二者都等于同一常数，用$-ω^2$表示这个常数，则由方程得到如下两个方程为:<br>$$ \dfrac {d^{2}F\left( t\right) }{dt^{2}}+\omega ^{2}F\left( t\right) =0 $$<br>$$ \dfrac {d^{2}Y\left( x\right) }{dx^{2}}+\beta ^{2}Y\left( x\right) =0 $$<br>$$ \beta =\dfrac {\omega }{a}, (0&lt;x&lt;L) $$<br>方程③为偏微分方程，通过采用分离变量法，将其转化为两个二阶常数微分方程，一个是关于时间变量$t$的，一个是关于空间变量$x$的。<br>如果同步运动是可能的话，表示依赖时间的函数$F(t)$必须是简谐的。可见方程的解为:<br>$$ F\left( t\right) =A\sin \omega t+B\cos \omega t =c\sin \left( \omega t+\varphi \right) \tag{⑥} $$<br>式中，$A$，$B$（或$C$，$φ$）为积分常数，由两个初始条件$y(x,0)$和$y(x,0)$来确定。<br>设方程的解为:<br>$$ Y\left( x\right) =D\sin \beta x+E\cos \beta x \tag{⑦}$$<br>式中$D$，$E$为积分常数，由边界条件$y(x,t)$和$y(L,t)$来确定。由边界条件:<br>$$ Y(0)=Y(L)=0 \tag{(8)}$$<br>显然对不同的边界条件，$Y(x)$将有不同的函数形式。把边界条件式⑧代入方程⑦得<br>$$ E=0，Dsin \beta L=0 $$<br>上式中，$D=0$显然不是振动解，故$\sin \dfrac {\omega L}{a}=0$。<br>由此可以求得无限多阶固有频率。由上式得:<br>$$ \omega _{r}=\dfrac {r \pi a}{L}=\dfrac {r \pi }{L}\sqrt {\dfrac {T}{\rho }}, (r=1,2…) $$<br>式中，频率$\omega _{r}$称为基频，或基频率，较高次频率$\omega _{r},(r=2,3…)$称为高次谐频，高次谐频是基频波的整数倍。对应于无限多阶固有频率，有限多阶固有频率振型函数:<br>$$ Y_{r}\left( x\right) =\sin \dfrac {r\pi x}{L}, (r=1,2…) $$<br>弦对应于各阶固有频率的固有振动为:<br>$$ Y_{r}\left( x,t\right) =Y_{r}\left( x\right) F_{r}\left( t\right) = \left( Ar\sin \omega _{r}t+Br\cos \omega _{r}t\right) \sin \dfrac {r\pi x}{L} $$<br>而弦的任意一个自由振动都可以表示为这些固有振型的叠加，即有:<br>$$ y=\left( x,t\right) =\sum ^{\infty }_{r=1}Y_{r}\left( t\right) F_{r}\left( t\right) =\sum ^{\infty }_{r=1}\left( Arsin\omega t+Br\cos \omega t\right) \sin \dfrac {r\pi x}{L} $$<br>从上面的分析可以看出琴弦的基频与琴弦的长度成反比，且随着张紧力的增大而增大、随着单位长度琴弦质量的增大而减小。这也就解释了，小提琴的高音琴弦要比低音琴弦细些，且同一根琴弦，手指按压的位置越靠近琴马拉琴发出的声音越高。</p>
-<p>对于琴弦振动高次谐频，乐理中称为泛音。每一个泛音都有自己所对应的能量范围和频率特征，泛音决定了小提琴的音量、音色以及声音的持续时间等。所以当小提琴琴弓拉动琴弦时，其产生的声音是由一群频率互为整数比的基频和其高次谐频所构成，因此我们听到小提琴的声音丰富且具有和谐感。关于基频与泛音的具体说明在第三章。</p>
-<p>很多时候，由于振动、或者环境温度变化导致琴弦长度的变化，都会导致琴弦的张紧力发生变化。张紧力的变化就会导致琴弦的基频发生变化，就是我们常常说的“音不准”的问题。通过扭动弦轸以调整琴弦的松紧，就可以达到调音的目的。</p>
-<p>调音的具体方法以及原理在接下来的章节解释，不过在此之前先介绍一些关于音律的知识。</p>
-<h1 id="音律的数学原理"><a href="#音律的数学原理" class="headerlink" title="音律的数学原理"></a>音律的数学原理</h1><p>————————————————————————</p>
-<h2 id="音律的发展与名词的解释"><a href="#音律的发展与名词的解释" class="headerlink" title="音律的发展与名词的解释"></a>音律的发展与名词的解释</h2><p>纯律：指两个音的声波震动的比例越单纯，则这两个音听起来会越和谐，反之则越不和谐。这也是人类耳朵天生的特性，所以早期所谓和谐音程的声波振动频率比例大致如下：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">音级</th>
-<th style="text-align:center">1</th>
-<th style="text-align:center">2</th>
-<th style="text-align:center">3</th>
-<th style="text-align:center">4</th>
-<th style="text-align:center">5</th>
-<th style="text-align:center">6</th>
-<th style="text-align:center">7</th>
-<th style="text-align:center">$\dot{1}$</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">频率比</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">6/5</td>
-<td style="text-align:center">5/4</td>
-<td style="text-align:center">4/3</td>
-<td style="text-align:center">3/2</td>
-<td style="text-align:center">5/3</td>
-<td style="text-align:center">8/5</td>
-<td style="text-align:center">2</td>
-</tr>
-</tbody>
-</table>
-<p>虽然纯律最符合人类耳朵对美声的要求，能够有非常优美的和声音响效果，但却不太实用。因为这样的比例会因为转移调性而有很大的麻烦，例如C大调的主音是DO，应该以DO为起点，依照比例而定出其他音的音高，但如果转到G大调，所有的音的音高就会稍微做一些改变了。</p>
-<p>十二平均律：随着音乐的发展，纯律的缺点就显示出，为了解决这问题，十二平均律应运而生。将一个纯八度（如c1—c2）平均分成十二个均等的部分——半音，这种定律法就叫“十二平均律”。</p>
-<p>“平均”最大的优点就是不管怎样移调或转调，都能够获得均等的音乐效果。这也是十二平均律优于纯律的地方。但这是相对的，因为十二平均律是将一个八度均分成12等分，所以每一个半音之间的震动比数都是一个除不尽的无限小数，所以无论演奏哪一个和弦都不可能得到真正完全谐和的音乐效果，只不过十二平均律影响的幅度相当小，比较之下仍是非常好的一个音程系统。 当前MIDI无法取代真人演奏效果的原因是因为真人演奏时演奏家会凭自己的耳朵判断音程和谐的程度，通常比较接近纯律，但在电脑中现时还无法更好做到，根本原因是音程定义系统上有着根本的差异，不过差异不太大。</p>
-<p>五度相生律：以一音为基音，然后将频率比为3：2的纯五度音程作为生律要素，分别向基音两侧同时生音。假如C为基音，按照五度相生原理向上可生出G、D、A、E、B，向下可生出F、降B、降E、降A、降D、降G，将连同基音在内的十二个音写在一个八度之内。如下图所示[4]：<br><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%B0%8F%E6%8F%90%E7%90%B4%E7%9A%84%E8%B0%83%E9%9F%B3%E5%8E%9F%E7%90%86/Violin2.jpg" alt=""><br>在西方，早在公元前6世纪古希腊哲学家、科学家毕达哥拉斯及其学派就提出了“五度相生律”，因此，五度相生律又被称为“毕达哥拉斯律”。毕达哥拉斯及其学派认为宇宙和谐的基础是完美的数的比例，音乐与宇宙天体存在类似。认为弦长比分别为2:1、3:2、4:3时发出相隔纯八度、纯五度、纯四度的音程定为完美的协和音程。他们将纯五度作为生律要素，由此产生“五度相生律”。</p>
-<p>小提琴作为弓弦乐器, 其G、D、A、E四根弦从低到高就是以按五度定弦的。其中的A 音是标准音高440Hz。空弦拉动时A弦跟E弦是纯五度关系，而D弦与A弦也是纯五度关系，G与D弦也是纯五度关系。</p>
-<h2 id="十二平均律的数学原理"><a href="#十二平均律的数学原理" class="headerlink" title="十二平均律的数学原理"></a>十二平均律的数学原理</h2><p>前面已经介绍过，十二平均律是将一个音程纯平均分成十二个均等的部分——半音。那为什么是十二呢？</p>
-<p>声波振动的频率增加一倍，音调听起来就高一个八度。十二平均律将这个两倍的频率划分成了12份，也就是一个小二度的频率比是$\sqrt [12] {2}$，所以五度的频率比就是$2^{\dfrac {7}{12}}\simeq 1.498$. 与纯律的纯五度频率比$3:2$非常接近，人耳几乎听不出来差别。前面也说过，纯五度人耳听起来非常和谐。<br>当我们按照五度相生律划分音程时，从1开始，首先得到频率比$3/2$的G音。由G音，得到跟G音频率比为$3/2$的$\left( 3/2\right) ^{2}$这个音，当然这已经是下一个八度音程里的音了，对应到这个音程的音频率比应该是$\dfrac {\left( 3/2\right) ^{2}}{2}$，即为D. 重复这一过程，就会的到频率比为$\dfrac {\left( 3/2\right) ^{3}}{2}$的A，然后是$\dfrac {\left( 3/2\right) ^{4}}{2^{2}}$的E，$\dfrac {\left( 3/2\right) ^{5}}{2^{2}}$的B。当重复这个过程十二次时，$\dfrac {\left( 3/2\right) ^{12}}{2^{6}} \approx 2.01$。这个值已经非常非常接近于2。也就是说我们已经近似将频率比$1～2$这个范围划分出了12个半音。</p>
-<p>在十二平均律里，因为五度的频率比与$3:2$接近，所以当钢琴按下C和G时，其发出的声音是非常和谐的。</p>
-<h1 id="音律关于振动的解释"><a href="#音律关于振动的解释" class="headerlink" title="音律关于振动的解释"></a>音律关于振动的解释</h1><p>————————————————————————</p>
-<h2 id="乐音的四个基本特性"><a href="#乐音的四个基本特性" class="headerlink" title="乐音的四个基本特性"></a>乐音的四个基本特性</h2><p>人耳能听到的声音频率范围大约在 20Hz-20KHz之间，一般音乐的频率范围大致在 40Hz-15KHz 之间。<br>乐音有四种基本性质：音高（pitch）、音强（volume）、音长（duration）和音色（timbre），<br>又称作乐音四要素。与之相对应的客观物理量则分别是：频率（frequency）、声压（sound pressure）、时间（time）、频谱（spectrum）和波形（wave shape）。决定声音音高的主要是频率，而频谱则与音色关系最为密切。</p>
-<p>音色主要决定于以下几个物理因素：谐波和分音的数目、谐波和分音的绝对强度和相对强度、谐波和分音的长短、分音的不协和程度、声音的基频、谐波和分音在听音区的位置等，它们组合的方式和量值的改变都会改变声波的波形，从而改变音色。 现代音乐声学中，对于音色的分析多采用频谱分析法，即通过声音的采集和分析系统把声音转化为可见的振动图像和频谱图像，再分析这些图像所代表的声音特征。声波振动图像直观反映声音随时间变化的特征，频谱图主要反映声音中分音数量与分音之间的强度关系。</p>
-<h2 id="基频与泛音、频谱分析"><a href="#基频与泛音、频谱分析" class="headerlink" title="基频与泛音、频谱分析"></a>基频与泛音、频谱分析</h2><p>一段声波其实是由很多频率成分构成的。前面弹拨弦的振动公式也解释了这个问题，每种成分赋值大小都影响最后听到的音色是如何的，这些由琴的结构决定。</p>
-<p>下图就是一个小提琴录音片段的频谱。从图中大概可以看到它的基频是440Hz左右，而其他的频率成分比如880Hz、1320Hz等等就是小提琴的泛音，这些泛音频谱分析就是将一段波形做傅立叶变换，得到不同频率成分的正弦波形的叠加，将声波信号以频谱的方式呈现。例如上图。利用频谱分析可以对声波进行有效的分析、叠加等操作。<br><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%B0%8F%E6%8F%90%E7%90%B4%E7%9A%84%E8%B0%83%E9%9F%B3%E5%8E%9F%E7%90%86/Violin3.png" alt=""></p>
-<h2 id="和谐"><a href="#和谐" class="headerlink" title="和谐"></a>和谐</h2><p>和谐是一个很抽象又不抽象的词。文章的前面也多次提到“和谐”，比如纯五度、纯八度、同度和谐。文字的描述只会感觉和谐这个概念很抽象，但是真正当你听到那些和谐的和弦，听到纯五度、纯八度，与小二度之间的对比，又很容易理解所谓的和谐的概念。这一小节就讨论“和谐”内在的理论基础。<br>首先是——拍——的概念。</p>
-<p>在机械振动课上学过，在无阻尼单自由度简谐激励振动中，当激励频率与物体固有频率相近时，就会产生拍的现象。而二者频率相等时则会产生共振。在这里，讨论的“拍”指的是当两个频率相近的波叠加的时候产生的现象。<br>正弦函数的叠加公式如下：<br>$$ \sin u+\sin v =2\sin \dfrac {1}{2}\left( u+v \right) \cos \dfrac {1}{2}\left( u+v\right)  $$<br>拿大二度叠加举例，假设是C和D叠加，其基频率分别为261.6Hz和294.3Hz。则有:<br>$$ \sin \left( 261.6\times 2\pi t\right) + \sin \left( 294.3\times 2\pi t\right) = 2sin \left( 555.9 \pi t\right)cos \left( 32.7 \pi t\right) $$<br>这个结果可以看成是$sin$函数的幅值按照$cos$函数的大小变化，也就是声波的幅值按照$cos \left( 32.7 \pi t\right) $变化，频率只有16.4Hz。一般来说，人耳对频率较低的声波变化是比较敏感的。这时候人耳能感受到的这种有规律的有强弱变化的声波，大概就是一种有“嗡嗡嗡”的声音，不是持续、明亮的乐音。<br>用Gragher做上述函数的图像，可以很直观地看出这种变化:<br><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%B0%8F%E6%8F%90%E7%90%B4%E7%9A%84%E8%B0%83%E9%9F%B3%E5%8E%9F%E7%90%86/Violin4.png" alt=""><br>事实上，前面也解释过，当小提琴拉奏某个音的时候，其实人耳听到的不只有基频，还有各种泛音和分音。其叠加情况也跟基频类似，结果就是产生这种不和谐的拍现象。<br>而当纯五度的情况，就不会出现这种“拍”的现象。假设是同时拉奏C和G，那么简单的正弦函数叠加就是<br>$$ \sin \left( 261.6\times 2\pi t\right) + \sin \left( 392.5\times 2\pi t\right) = 2sin \left( 654.1 \pi t\right)cos \left( 130.9 \pi t\right) $$<br>图像为:<br><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%B0%8F%E6%8F%90%E7%90%B4%E7%9A%84%E8%B0%83%E9%9F%B3%E5%8E%9F%E7%90%86/violin5.png" alt=""><br>纯八度的叠加图像为:<br><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%B0%8F%E6%8F%90%E7%90%B4%E7%9A%84%E8%B0%83%E9%9F%B3%E5%8E%9F%E7%90%86/Violin6.png" alt=""><br>就没有前面那种拍现象。</p>
-<p>所以纯律的基础就是，当两个声波的频率比是简单的整数比，比如3：2、2：1时，比较容易得到频率仍旧很高的周期波。它们基频与泛音群的叠加，得到仍旧持续、响亮、和谐的声音。</p>
-<h1 id="小提琴的调音过程"><a href="#小提琴的调音过程" class="headerlink" title="小提琴的调音过程"></a>小提琴的调音过程</h1><p>————————————————————————</p>
-<p>小提琴的调音方法，包括大提琴、低音提琴等，基本都常用双弦法调音。</p>
-<p>首先，要学会调A弦（二弦），这时需要一个定音器——吹的（如单簧管）或者是电子的，在奏响定音器的A弦音后，在琴上以长弓拉响A弦，这时便会有两个声波同时进行：一个是定音器的A， 另一个是小提琴的A。</p>
-<p>不准的A弦是不会和定音器的A音相和谐的。当定音器的A和不准的小提琴的A同奏响时，两个音这时应是一个同度的关系，可现在却是一种接近度的关系 所以在混合的两个音响中能分明地听见嗡嗡嗡的声音，这就表明小提琴上的弦是不准的，需要调高或调低。等到A弦的音准了后，琴的A音与定音器的A音同时奏响时就不会有嗡嗡嗡的声响。</p>
-<p>有了A弦的标准音，就可以此为基础，继续调E和D弦了。之前提到过，小提琴的四根弦之间是纯五度关系。当D弦和准的A弦一同奏响时，两个音这时应是一个纯五度的关系，纯五度是与同度、八度一样和谐的双音，但在两个音响中能分明地听见”嗡嗡嗡”的声音时，这就表明弦是不准的，需要调高或调低。</p>
-<p>当定音器的A音与小提琴的A弦同时奏响时，如果是此时小提琴的A弦是准的，则我们会听到一个和谐的双音。当A弦不准的时候，A弦发出的音跟定音器的A音频率相差不大，根据前面的分析，常常会产生拍的现象，也就是我们会听到不和谐的感觉。通过扭动弦轸以调整琴弦的松紧，改变其固有频率和音色。在小提琴音调准之后，我们会听到和谐的同度音。</p>
-<p>在根据定准的A弦调节D弦的时候，因为它们之间是纯五度关系。而前面已经解释过，纯五度关系的两个音的频率比为3：2，是较小的整数比。他们之间波的叠加会产生相对规律的波，如前面的3：2纯五度正弦波叠加那样。我们听起来就非常和谐。根据同样的道理，可以校准其余的弦。</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>————————————————————————<br>这次大作业，探究了小提琴的发声原理以及琴弦的振动模型，得到了影响琴弦固有频率的因素。用数学和振动相关知识解释了关于音律背后的理论依据，而且对小提琴调音过程中常提到的关于双音和谐做了简单的直观的解释。最后介绍了小提琴调音的过程，并根据前面探究过的纯五度和同度和谐以及调音操作做了详细的理论解释。</p>
-<p>通过此次作业，对波的叠加、通过傅立叶变换进行的频谱分析、弦的振动分析都有了更加深刻的认识。特别是对于乐器的发声和调音原理、乐理背后的数学知识、对音乐直观感受背后的理论解释，都有了更深的理解。感受到了音乐背后的数学之美。</p>
-<p>————————————————————————</p>
-<blockquote>
-<p>参考文献及参考网站</p>
-<ol>
-<li>图片来自维基百科<a href="https://zh.wikipedia.org/wiki/%E5%B0%8F%E6%8F%90%E7%90%B4" target="_blank" rel="noopener">https://zh.wikipedia.org/wiki/%E5%B0%8F%E6%8F%90%E7%90%B4</a> </li>
-<li>关于自激振动相关的解释、概念来自于《机械振动》，张义民编著，清华大学出版社</li>
-<li>参考自《小提琴弦振动与琴体腔谐振研究》，贾雄</li>
-<li>图片来自于百度百科<a href="http://baike.baidu.com/view/41790.htm" target="_blank" rel="noopener">http://baike.baidu.com/view/41790.htm</a></li>
-<li>图片来自于<a href="https://gist.github.com/rickyteng/f8612146cb6ba9f717b5，《Sounds" target="_blank" rel="noopener">https://gist.github.com/rickyteng/f8612146cb6ba9f717b5，《Sounds</a> and signals，第一章》</li>
-</ol>
-</blockquote>
-
-          
+          <p>这篇东西其实是本科上《机械振动》这门课的时候写的课程大作业，当时老师给了几个题目，这个还挺有意思。前几天在网盘里无意中看到了，就发上来吧。那个时候写的课程作业格式也不太规范，有的图和引用当时也没有记录来源，可能有的理解不完全正确，现在也没有再继续了解过关于振动的相关知识了。凑活一看。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/12/09/小提琴琴弦的调制原理/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1740,170 +1862,9 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/19/树莓派Aria2远程下载/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ZHAI">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZHAI'S">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/08/19/树莓派Aria2远程下载/" itemprop="url">树莓派Aria2远程下载</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-19T16:18:01+08:00">
-                2017-08-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/树莓派/" itemprop="url" rel="index">
-                    <span itemprop="name">树莓派</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/2017/08/19/树莓派Aria2远程下载/" class="leancloud_visitors" data-flag-title="树莓派Aria2远程下载">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>如果没有其他什么配件的话，树莓派比较常用的一个用途就是刷一个媒体播放系统再加上远程下载做播放机用。搜了很多教程，推荐最多的就是安装Xware固件通过迅雷远程下载实现，毕竟网上资源最多而且连接稳定的还是迅雷资源。但是在尝试安装配置迅雷远程下载的过程中，发现无法获得注册码。在网上苦寻解决方案，却发现在7月17号的时候，迅雷远程下载Xware宣布关闭。也就是说网上所有的利用Xware来把树莓派打造成一个远程下载机的教程全部无效。由此只能通过Aria2实现远程下载功能了。不过感觉上Aria2的使用上比较受限，下载百度云盘里的电影倒是如鱼得水，其他种子之类的话还是迅雷好用啊（可能没有掌握正确的电影下载技巧～～）。<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/08/19/树莓派Aria2远程下载/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
-  <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
-  </nav>
-
 
 
           </div>
@@ -1947,7 +1908,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1958,7 +1919,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -1969,7 +1930,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -2008,7 +1969,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
