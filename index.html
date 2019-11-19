@@ -547,7 +547,7 @@
           <p>最近从一篇论文中（参考文献[3]）得到了一点灵感来解决一个驱动模式分类的问题，该作者用了三种算法来解决此问题。首先采用山峰聚类（Mountain Clustering）算法确定聚类中心的数目，因为对于随机一段驾驶任务来说，类别的数目是不确定的；之后用模糊C均值聚类（Fussy C-Means Clustering，FCM）算法对驱动模式进行分类，最后基于相似度度量将相邻且相似的聚类进行合并。该作者对其算法实现的细节提及甚少，在进行算法复现的时候，发现一个问题，一般不管是FCM或者是Moutain Clustering，这些算法采用的数据都是无序的。也就是说，样本的出现顺序与其类别归属是无关的。但是在驱动模式分类的这个问题中，需要将连续的一段数据识别为几类，将一段连续的驾驶数据分割为路段1、路段2……路段n，位于5.1-5.2km处的驾驶特征点不可能被划分到范围为1-3km的路段1中，但是就FCM算法来说，只要该特征点与路段1中的特征匹配，就会被划归路段1中，但对于此问题这实际上是错误的。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2019/03/03/有序数据的聚类方法/#espandi" rel="contents">
+            <a class="btn" href="/2019/03/03/有序数据的聚类方法/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -704,7 +704,7 @@
           <p>这篇东西其实是本科上《机械振动》这门课的时候写的课程大作业，当时老师给了几个题目，这个还挺有意思。前几天在网盘里无意中看到了，就发上来吧。那个时候写的课程作业格式也不太规范，有的图和引用当时也没有记录来源，可能有的理解不完全正确，现在也没有再继续了解过关于振动的相关知识了。凑活一看。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2018/12/09/小提琴琴弦的调制原理/#espandi" rel="contents">
+            <a class="btn" href="/2018/12/09/小提琴琴弦的调制原理/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -861,7 +861,7 @@
           <p>前几天跑动态规划算法，尽管开了CPU六核并行运算，但是由于数据量巨大、速度还是非常慢，所以考虑了能不能用GPU加速计算，毕竟MATLAB并行计算工具箱还是挺好用的。<br>当然这个成功不成功不重要（实际上没有成功、后面会提到），感觉MATLAB的GPU加速是个很有意思也值得总结的内容，所以就把最近了解到的东西记录一下。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2018/07/07/MATLAB的GPU加速/#espandi" rel="contents">
+            <a class="btn" href="/2018/07/07/MATLAB的GPU加速/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1018,7 +1018,7 @@
           <p>第一次了解动态规划算法是在北大郭炜老师的算法课上。当时只是理解了动态规划算法的优越性主要是其尽可能地避免了问题求解过程中地重复运算。只是没想到后来遇到的一个工程问题（关于最小燃油消耗目标下的功率分配）中，可以运用动态规划算法进行求解。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2018/04/28/动态规划算法/#espandi" rel="contents">
+            <a class="btn" href="/2018/04/28/动态规划算法/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1176,7 +1176,7 @@
 <p>对于一个二阶RC等效电路模型来说，需要识别的参数有欧姆内阻Ro，两个RC环节的阻抗参数R1、R2和C1、C2。当然，如果连开路电压OCV都未知的话，还需要识别OCV。而且，以上这些参数都是电池SoC的函数。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2018/01/21/电池模型的参数估计/#espandi" rel="contents">
+            <a class="btn" href="/2018/01/21/电池模型的参数估计/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1333,7 +1333,7 @@
           <p>之前已经简单了解过状态空间方程的离散化方法，对于二阶等效电路模型来讲，由于其本身各个方程之间不是耦合的，所以离散化计算过程并不是十分复杂，很容易就可以得到其状态空间方程的离散形式。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/12/05/[NOTE]状态空间方程离散化的matlab处理/#espandi" rel="contents">
+            <a class="btn" href="/2017/12/05/[NOTE]状态空间方程离散化的matlab处理/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1491,7 +1491,7 @@
 <p>在网上搜了很多更换电脑重建blog的教程，无奈不知哪步出错，无法本地预览、deploy也有问题。所以只能重建博客上传内容，顺便也整理了一些注意事项提醒自己。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/12/01/博客复原/#espandi" rel="contents">
+            <a class="btn" href="/2017/12/01/博客复原/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1650,7 +1650,7 @@
 <h2 id="连续系统与离散系统"><a href="#连续系统与离散系统" class="headerlink" title="连续系统与离散系统"></a>连续系统与离散系统</h2><p>控制系统可以分为连续系统和离散系统。一般研究中通过拉普拉斯变化或建立微分方程的方法，都是针对与连续控制系统。它所有变量的变化都是连续的。但是由于现今控制系统需要计算机参与计算。举个例子，当控制系统中某个变量需要通过传感器来测量时，只能是每间隔一个时间段来对传感器的数据进行采样。这样计算机处理的数据就不是一段连续的数据而是一串数据点，相应的也要将连续的系统方程进行离散化。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/10/19/[NOTE]电池模型的状态空间方程/#espandi" rel="contents">
+            <a class="btn" href="/2017/10/19/[NOTE]电池模型的状态空间方程/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1807,7 +1807,7 @@
           <h1 id="卡尔曼滤波器的通俗理解"><a href="#卡尔曼滤波器的通俗理解" class="headerlink" title="卡尔曼滤波器的通俗理解"></a>卡尔曼滤波器的通俗理解</h1><p>————————————————————————<br>卡尔曼滤波器的工作过程实际上就是不断地对目前构建的模型进行状态估计、不断地测量实际模型的状态值、并将这两个状态向量融合成更加准确的状态向量、将该状态向量带入新的模型进行下一轮估计的不断迭代的过程。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/09/18/[NOTE]卡尔曼滤波器与电池SoC估计/#espandi" rel="contents">
+            <a class="btn" href="/2017/09/18/[NOTE]卡尔曼滤波器与电池SoC估计/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
