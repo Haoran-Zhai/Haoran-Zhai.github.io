@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="电池管理系统,卡尔曼滤波器,SoC估计," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="卡尔曼滤波器的通俗理解————————————————————————卡尔曼滤波器的工作过程实际上就是不断地对目前构建的模型进行状态估计、不断地测量实际模型的状态值、并将这两个状态向量融合成更加准确的状态向量、将该状态向量带入新的模型进行下一轮估计的不断迭代的过程。">
+<meta name="keywords" content="电池管理系统,卡尔曼滤波器,SoC估计">
+<meta property="og:type" content="article">
+<meta property="og:title" content="卡尔曼滤波器与电池SoC估计">
+<meta property="og:url" content="http://yoursite.com/2017/09/18/卡尔曼滤波器与电池SoC估计/index.html">
+<meta property="og:site_name" content="TAKU&#39;S">
+<meta property="og:description" content="卡尔曼滤波器的通俗理解————————————————————————卡尔曼滤波器的工作过程实际上就是不断地对目前构建的模型进行状态估计、不断地测量实际模型的状态值、并将这两个状态向量融合成更加准确的状态向量、将该状态向量带入新的模型进行下一轮估计的不断迭代的过程。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E7%9F%A5%E4%B9%8E-%E5%8D%A1%E5%B0%94%E6%9B%BC.PNG">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E9%A2%84%E6%B5%8B%E5%88%86%E5%B8%83.PNG">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E6%B5%8B%E9%87%8F%E5%88%86%E5%B8%83.PNG">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E5%90%88%E6%88%90%E5%88%86%E5%B8%83.PNG">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E7%AD%89%E6%95%88%E7%94%B5%E8%B7%AF%E6%A8%A1%E5%9E%8BR-2RC.PNG">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/EMF-SoC.PNG">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E5%8D%8F%E6%96%B9%E5%B7%AE%E7%9F%A9%E9%98%B5.PNG">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E6%B5%8B%E9%87%8F%E5%80%BC.png">
+<meta property="og:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E8%9E%8D%E5%90%88.png">
+<meta property="og:updated_time" content="2018-12-07T11:28:53.963Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="卡尔曼滤波器与电池SoC估计">
+<meta name="twitter:description" content="卡尔曼滤波器的通俗理解————————————————————————卡尔曼滤波器的工作过程实际上就是不断地对目前构建的模型进行状态估计、不断地测量实际模型的状态值、并将这两个状态向量融合成更加准确的状态向量、将该状态向量带入新的模型进行下一轮估计的不断迭代的过程。">
+<meta name="twitter:image" content="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E7%9F%A5%E4%B9%8E-%E5%8D%A1%E5%B0%94%E6%9B%BC.PNG">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/09/18/卡尔曼滤波器与电池SoC估计/"/>
+
+
+
+
+
+  <title>卡尔曼滤波器与电池SoC估计 | TAKU'S</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">TAKU'S</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/18/卡尔曼滤波器与电池SoC估计/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="TAKU">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TAKU'S">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">卡尔曼滤波器与电池SoC估计</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-18T19:10:56+08:00">
+                2017-09-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/电池管理系统/" itemprop="url" rel="index">
+                    <span itemprop="name">电池管理系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2017/09/18/卡尔曼滤波器与电池SoC估计/" class="leancloud_visitors" data-flag-title="卡尔曼滤波器与电池SoC估计">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="卡尔曼滤波器的通俗理解"><a href="#卡尔曼滤波器的通俗理解" class="headerlink" title="卡尔曼滤波器的通俗理解"></a>卡尔曼滤波器的通俗理解</h1><p>————————————————————————<br>卡尔曼滤波器的工作过程实际上就是不断地对目前构建的模型进行状态估计、不断地测量实际模型的状态值、并将这两个状态向量融合成更加准确的状态向量、将该状态向量带入新的模型进行下一轮估计的不断迭代的过程。<br><a id="more"></a><br>最开始看到卡尔曼滤波也是非常非常头疼，之前学过的数学知识、控制原理什么的基本都忘光了，完全是一点都摸不着头绪，直到在知乎上看到了大神的简易无公式版卡尔曼滤波描述：<br><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E7%9F%A5%E4%B9%8E-%E5%8D%A1%E5%B0%94%E6%9B%BC.PNG" alt=""><br>由于传感器（也有可能是别的、比如尺子？）在测量过程中必定存在的误差，导致观测值一般来说与真实值均存在一定的误差。这个误差也就是所谓的观测噪声。所以当我们获得一个观测值的时候、比如5V，实际上真实的状态值可能是4.98V或者5.05V，一般来说这个真实的状态值是4.98V的概率要比是5.23V的概率要大一些。故根据观测的结果，可以推测出真实的状态值的概率分布。</p>
+<p>同样也存在所谓的激励噪声。并且，在构建系统模型的过程中，不可避免地存在系统模型的误差，实际上我们可以根据上一时刻的状态值、模型和输入推测出该时刻的状态值。必然这个状态的估计值与真实值也存在一定的误差。同样，根据获得的估计值，我们可以推测真实值的概率分布可能是这样的：<br><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E9%A2%84%E6%B5%8B%E5%88%86%E5%B8%83.PNG" alt=""><br>而根据刚刚得到的观测值得到的真实值概率分布可能是这样的：<br><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E6%B5%8B%E9%87%8F%E5%88%86%E5%B8%83.PNG" alt=""><br>这两个得出的真实的状态值的概率分布分别是通过估计值和观测值推测出来的。现在得到这两个概率分布之后，我们必然要根据这两组概率分布推测出一个更理想、更切合实际的分布。如果根据一个很棒的规则将其融合、得到新的分布，则根据我们的预想这个新的结果会更加贴近实际情况，如下图这样：<br><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E5%90%88%E6%88%90%E5%88%86%E5%B8%83.PNG" alt=""><br>绿色的新结果把它看成是目前最满意的对当前真实的状态值的判断。并会将得到的这个值，带入到下一时刻计算得到对下个状态估计值。这是一个不断进行迭代的过程。而这个理想的规则就是所谓的Kalman增益。</p>
+<p>其中状态向量的协方差矩阵$P$代表了内部各变量的相关性，$H$则为在观测方程中的输出矩阵的雅可比矩阵（即对其中各变量求偏导）、以将非线性方程线性表示。</p>
+<h1 id="基于卡尔曼滤波器的电池SoC估计"><a href="#基于卡尔曼滤波器的电池SoC估计" class="headerlink" title="基于卡尔曼滤波器的电池SoC估计"></a>基于卡尔曼滤波器的电池SoC估计</h1><p>————————————————————————<br>使用卡尔曼滤波器进行SoC估计首先需要构建电池模型。等效电路模型是最常用的电池模型，R-2RC模型构建如下：<br><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E7%AD%89%E6%95%88%E7%94%B5%E8%B7%AF%E6%A8%A1%E5%9E%8BR-2RC.PNG" alt=""><br>电池模型搭建好之后，接下来就是通过卡尔曼滤波算法进行电池的SoC估计。描述分析一下该模型：模型的输入或者说是激励应当是电流、电流的大小变化决定了电池内部SoC的变化与各个内阻消耗的电压值；而模型我们能够通过传感器测量的值为电池两端的电压值，也就是我们将电压值作为直接观测变量；电池内部的SoC、各内阻消耗电压作为状态参数。</p>
+<h2 id="状态方程"><a href="#状态方程" class="headerlink" title="状态方程"></a>状态方程</h2><p>首先构建卡尔曼滤波器的第一个方程，一般将其称为状态方程。状态方程构建的是电池内部的状态参数方程、同样也是进行循环的主体方程之一，根据上一时刻的内部参数与激励输入推测该时刻的状态值，也就是说，该值是估计值（“*”上标代表估计值）.</p>
+<p>依据之前构建的电池模型，将系统构建一阶线性微分方程组如下：<br>$$ \begin{cases} \dfrac{dSoC}{dt}=-\dfrac{i}{C_{cap}}\\ \dfrac{du_{1}}{dt}=-\dfrac{1}{R_{1}C_{1}}u_{1}+\dfrac{1}{C_{1}}i\\ \dfrac{du_{2}}{dt}=-\dfrac{1}{R_{2}C_{2}}u_{1}+\dfrac{1}{C_{2}}i \end{cases} $$<br>$$ u=E+u_{1}+u_{2}+i\cdot R_{0} $$<br>$u$为电池的开路电压。</p>
+<p>将上述连续系统近似转化为离散系统并写为矩阵形式如下(具体过程在本文中不详细展开；假设步长为T，即上一时刻与下一时刻采样为T)：<br>$$ \left[ \begin{matrix} SoC_{k}\\ u_{k}^{1}\\ u_{k}^{2}\end{matrix} \right]= \left[ \begin{matrix} 1&amp; &amp; \\ &amp; 1-\dfrac{T}{R_{1}C_{1}}&amp; \\  &amp; &amp; 1-\dfrac{T}{R_{2}C_{2}}\end{matrix} \right]\left[ \begin{matrix} SoC_{k-1}\\ u_{k-1}^1\\ u_{k-1}^2\end{matrix} \right]+\left[ \begin{matrix} -\dfrac{T}{C_{cap}}\\ \dfrac{T}{C_{1}}\\ \dfrac{T}{C_{2}}\end{matrix} \right]i_{k-1} $$<br>故状态方程可以表现成如下的形式：<br>$$ x_{k}^{*}=Fx_{k-1}+Gi_{k-1} $$<br>该状态方程是线性的。</p>
+<h2 id="观测方程"><a href="#观测方程" class="headerlink" title="观测方程"></a>观测方程</h2><p>第二个方程是观测方程。观测方程主要构建的是观测值（在SoC估计中也就是电池的工作电压）与内部状态参数的函数关系，即上文提到过的：<br>$$ u=E+u_{1}+u_{2}+i\cdot R_{0} $$<br>其中$E$是电池的平衡电势，即$EMF$与$V_{h}$的合成值，其与电池的SoC存在非线性的函数关系、且与电池的充放电状态等等有关，如下图所示：<br><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/EMF-SoC.PNG" alt=""><br>1、2、3分别为充电平衡、EMF以及放电平衡曲线。<br>忽略滞回电压对平衡电势的影响以及其他因素的影响，将平衡电势曲线近似看为只与SoC有关：<br>$$ E=g\left(SoC\right) $$<br>如果运用查表来在BMS中获得该函数关系的话，将会大大增加嵌入式系统的压力，所以一般采用多项式拟合的方法，获得该函数并带入计算。<br>$$ E=n_{0}SoC^0+n_{1}SoC^1+n_{2}SoC^2+n_{3}SoC^3+…+n_{n}SoC^n $$<br>很明显，观测方程是一个非线性方程。所以这里的卡尔曼滤波器实际上是扩展的卡尔曼滤波器，经典卡尔曼滤波器的状态方程和观测方程都只能是线性方程。</p>
+<p>将上述模型方程写成矩阵形式并离散化：<br>$$ u_{k}^{*}=\left[ \begin{matrix} h_{k}^{*}&amp; 1 &amp; 1 \end{matrix} \right]\left[ \begin{matrix} SoC_{k}\\ u_{k}^{1}\\ u_{k}^{2}\end{matrix} \right]+R_{0}\cdot i_{k} $$<br>故观测方程可以表现成如下的形式：<br>$$ y_{k}^{*}=H_{k}x_{k}+Ji_{k} $$<br>理论上$H_{k}$是由观测方程得到的雅可比矩阵：<br>$$ H_{k\left[i,j\right]}=\dfrac{\partial h_{\left[i\right]}}{\partial x_{\left[j\right]}} \left[x_{k}^{*}\right] $$<br>这里$h_{k}$是$g\left(SoC\right)$对$SoC$的导数（这是一种将非线性方程线性化的方法）。上面两个方程都可以看成是模型方程，也就是说这两个方程根据物理模型，得到了激励、电池内部状态与电池工作电压的关系——根据上一时刻的电池状态和输入激励可以推测出该时刻的电池内部状态，通过该时刻电池内部状态的估计值可以估计出该时刻的电池工作电压。这两组模型公式实际上也是在控制原理中讲过的标准的状态空间方程，即用一阶微分方程组来描述有界动态系统的运动、用线性方程组描述系统的输出。</p>
+<h2 id="Kalman增益"><a href="#Kalman增益" class="headerlink" title="Kalman增益"></a>Kalman增益</h2><p>第三个方程就是就是求解卡尔曼增益矩阵$K_{k}$。所谓的卡尔曼增益，即为将根据模型计算出的状态值分布与通过传感器获取的测量值分布融合成一个新的分布的方法。<br>得到卡尔曼增益，首先要计算状态向量$x_{k}$的协方差矩阵$P_{k}^{*}$。这个协方差矩阵表示出了状态向量中各元素之间的相关关系。一个例子：<br><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E5%8D%8F%E6%96%B9%E5%B7%AE%E7%9F%A9%E9%98%B5.PNG" alt=""><br>这个图描述了一个小车的运动，运动状态向量包含速度和位移两个变量。小车在某一时刻的状态是符合正态分布的（如中间的图片所示）（当然这是卡尔曼滤波器成立的前提），图中越亮的地方表示概率越大。如果小车的速度与位移之间存在一定联系的话（比如我们合理地推测，当小车速度越大时、位移很大概率也是更大的），则相应地，发亮的部分的形状会发生一定地改变（如右边的图片所示）。右图中很容易能看出，速度和位移呈正相关关系。而这个影响状态向量概率分布形状的相关关系，就用状态向量的协方差矩阵来表示。<br>相应地，我们通过传感器获得的观测值的随机分布可能是这样的：<br><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E6%B5%8B%E9%87%8F%E5%80%BC.png" alt=""><br>所以有理由相信，紫色部分和绿色部分重合的部分，是集合了两个分布的更加可信的值。<br><img src="http://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%99%A8%E4%B8%8E%E7%94%B5%E6%B1%A0SoC%E4%BC%B0%E8%AE%A1/%E8%9E%8D%E5%90%88.png" alt=""><br>因为实际应用中，我们没法直接求解出协方差矩阵具体的值，而且由于激励噪声和系统本身性质的原因，所以状态向量的协方差矩阵也不是确定的值，而是一个不断更新的值。故通过设定初值并不断更新的方法，得到每个时刻的协方差矩阵。具体就是:<br>$$ P_{k}^{*}=F_{K}P_{k-1}F_{k}^{T}+Q_{k-1} $$<br>$Q_{k}$是过程激励($i_{k}$)噪声的协方差矩阵。$P_{k-1}$为上一时刻的状态向量的协方差矩阵。</p>
+<p>之后所需要做的是通过一定的方法把重合的新的状态向量的分布求出来，其实就是求解卡尔曼增益（根据正态分布的特殊性质，新的分布仍旧是正态分布）。</p>
+<p>Kalman增益矩阵（需要计算观测方程中的$H_{k}$。上文中已介绍了$H_{k}$的求法）：<br>$$ K_{k}=P_{k}^{*}H_{k}^{T}\left(H_{k}P_{k-1}H_{k}^{T}+R_{k}\right)^{-1} $$<br>$R_{k}$为观测($u_{k}$)噪声的协方差矩阵。<br>此时便得到了卡尔曼增益矩阵，下一步需要做的就是运用卡尔曼增益矩阵求得最终的状态向量。</p>
+<h2 id="修正方程"><a href="#修正方程" class="headerlink" title="修正方程"></a>修正方程</h2><p>第四个方程是修正方程，即真正将两个颜色融合的过程。根据Kalman增益修正状态值，得到我们满意的对目前状态的判断。并求解相应的协方差矩阵，在接下来的循环之中作为上一状态值与上一状态的协方差矩阵带入计算。<br>$$ x_{k}=x_{k}^{*}+K_{k}\left(z_{k}-H_{k}x_{k}^{*}\right)=x_{k}^{*}+K_{k}\left(y_{k}-y_{k}^{*}\right) $$<br>$$ P_{k}=\left(I-K_{k}H_{k}\right)P_{k}^{*} $$<br>$I$是单元矩阵.</p>
+<p>至此便完成了一个循环。这个过程可以很容易通过MATLAB实现。至于具体实现过程中的初值设定，由于卡尔曼滤波器本身的特性，不用提供准确的初值即可以得到快速的收敛。所以状态向量的初值可以设定为$\left[ \begin{matrix} 0.9&amp; 0&amp; 0 \end{matrix} \right]^T$(假设)，初始协方差矩阵也可以设置为单位矩阵$I$。根据一些文献的做法，两个噪声矩阵设置为$0.0001I$（？）。</p>
+<h1 id="其他及参考资料"><a href="#其他及参考资料" class="headerlink" title="其他及参考资料"></a>其他及参考资料</h1><p>————————————————————————<br>了解卡尔曼滤波更详细的参数解释，参考<a href="https://zhuanlan.zhihu.com/p/25598462" target="_blank" rel="noopener">知乎李阳的专栏文章-说说卡尔曼滤波</a>，英文原版内容是<a href="http://www.bzarg.com/p/how-a-kalman-filter-works-in-pictures/" target="_blank" rel="noopener">How a Kalman filter works, in pictures</a>。<br>还有作者文中提到的几个关于协方差相关知识的理解：<a href="http://www.visiondummy.com/2014/04/geometric-interpretation-covariance-matrix/" target="_blank" rel="noopener">A geometric interpretation of the covariance matrix</a>，<a href="https://www.quora.com/What-is-an-eigenvector-of-a-covariance-matrix" target="_blank" rel="noopener">What is an eigenvector of a covariance matrix?</a>。</p>
+<p>本文只是给出了一种简单的连续电池模型的离散形式，以后详细学习一下该过程与几种离散化实现。<br>（零基础不容易啊～～）</p>
+<blockquote>
+<p>参考文献：</p>
+<p>1.<a href="https://www.zhihu.com/question/23971601" target="_blank" rel="noopener">知乎-如何通俗并尽可能详细解释卡尔曼滤波？-问题下Kent Zeng的回答</a><br>2.谭晓军. 电动汽车动力电池管理系统设计[M]. 中山大学出版社, 2011.<br>3.谭晓军. 电池管理系统深度理论研究：面向大功率电池组的应用技术[M]. 中山大学出版社, 2011.<br>4.<a href="http://www.cl.cam.ac.uk/~rmf25/papers/Understanding%20the%20Basis%20of%20the%20Kalman%20Filter.pdf" target="_blank" rel="noopener">Understanding the Basis of the Kalman Filter Via a Simple and Intuitive Derivation.</a><br>5.<a href="">CH03-StateEstimation</a><br>6.<a href="www.bzarg.com/p/how-a-kalman-filter-works-in-pictures">How a Kalman filter works, in pictures.</a><br>7.<a href="https://zhuanlan.zhihu.com/p/25598462" target="_blank" rel="noopener">知乎李阳的专栏文章-说说卡尔曼滤波.</a><br>8.<a href="http://www.visiondummy.com/2014/04/geometric-interpretation-covariance-matrix/" target="_blank" rel="noopener">A geometric interpretation of the covariance matrix.</a><br>9.<a href="https://www.quora.com/What-is-an-eigenvector-of-a-covariance-matrix" target="_blank" rel="noopener">What is an eigenvector of a covariance matrix?</a></p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/电池管理系统/" rel="tag"># 电池管理系统</a>
+          
+            <a href="/tags/卡尔曼滤波器/" rel="tag"># 卡尔曼滤波器</a>
+          
+            <a href="/tags/SoC估计/" rel="tag"># SoC估计</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/10/19/电池模型的状态空间方程/" rel="prev" title="电池模型的状态空间方程">
+                电池模型的状态空间方程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- Go to www.addthis.com/dashboard to customize your tools -->
+<div class="addthis_inline_share_toolbox">
+  <script type = "text/javascript" src = "//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5a263ca8ca96cd9a" async = "async" ></script>
+</div>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDA2My82NjE4"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">TAKU</p>
+              <p class="site-description motion-element" itemprop="description">TAKU的学习笔记本</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#卡尔曼滤波器的通俗理解"><span class="nav-number">1.</span> <span class="nav-text">卡尔曼滤波器的通俗理解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基于卡尔曼滤波器的电池SoC估计"><span class="nav-number">2.</span> <span class="nav-text">基于卡尔曼滤波器的电池SoC估计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#状态方程"><span class="nav-number">2.1.</span> <span class="nav-text">状态方程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#观测方程"><span class="nav-number">2.2.</span> <span class="nav-text">观测方程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kalman增益"><span class="nav-number">2.3.</span> <span class="nav-text">Kalman增益</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修正方程"><span class="nav-number">2.4.</span> <span class="nav-text">修正方程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他及参考资料"><span class="nav-number">3.</span> <span class="nav-text">其他及参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">TAKU</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("KUSQG7wOzQ6LdmCBPECy6Xvy-gzGzoHsz", "8QD8j7MG1MamDikPO3OYuxVA");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
