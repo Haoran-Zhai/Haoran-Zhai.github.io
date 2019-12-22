@@ -262,6 +262,161 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/09/图与最短路径算法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="TAKU">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TAKU'S">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/12/09/图与最短路径算法/" itemprop="url">图与最短路径算法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-09T21:49:40+08:00">
+                2019-12-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/算法/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/12/09/图与最短路径算法/" class="leancloud_visitors" data-flag-title="图与最短路径算法">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>算法对我来说很奇妙的地方在于，对于某些刚接触感觉无从下手去解决的问题、可以经过抽象化后可以从经典算法中找到一套简洁的解决方案。数学建模并求解的过程是充满快乐的。所以以后可能也会系统地学习一下算法。<br>之所以会接触图论和最短路径算法，是今年年初的时候参加华为软件挑战赛，赛题关于车辆调度与路径规划，故学习了一些有关内容，在此整理下算法和部分代码。</p>
+<h1 id="图"><a href="#图" class="headerlink" title="图"></a>图</h1><p>————————————————————————<br><strong>图</strong>（Graph）是一个比较抽象的数学概念，关于全局路径规划和地图类的问题可即以抽象为图的问题。图由<strong>顶点</strong>和<strong>边</strong>组成，边连接起两个顶点。按照边是否具有方向可以分为<strong>有向图</strong>和<strong>无向图</strong>。这在地图有关的问题里面也是一个很有用的概念，因为现实道路中除了双向都可以行驶的车道，还有大量单行道、或者单向在修路的车道。而这种情况下，无向图就无法解决这样的问题，无向图均默认两个顶点之间是双向可达的。<br>一个有向图可以具象化为：<br><img src="https://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%9B%BE%E4%B8%8E%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E7%AE%97%E6%B3%95/graph.jpg" alt=""><br>其实同样的一幅图，具象化后可以呈现出不同的形态：<br><img src="https://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/%E5%9B%BE%E4%B8%8E%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E7%AE%97%E6%B3%95/graph2.jpg" alt=""><br>这张图跟上一张图只是同一个有向图不同的图形表达而已，每个顶点和边的关系都没有改变。</p>
+<h2 id="无向图"><a href="#无向图" class="headerlink" title="无向图"></a>无向图</h2><p>————————————————————————<br>当两个顶点之间存在一条连接二者的路径，称之为二者<strong>连通</strong>。如果一个顶点可以经过其他顶点后再返回原点，则构成了一个<strong>环</strong>。当一幅图上的任意两点都是连通的，这幅图就可称之为连通图。<br>显然，树是一幅连通图，且没有任何环，故树为一幅无环连通图。而一幅普通的地图（假设无单行道），一般为有环连通图，显然可以从一个地点经过某些路回到原处，而且任意两个地点都是任意可达的。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/12/模型预测控制及其代码实现/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -365,7 +520,7 @@
 
       
         
-          <p>模型预测控制（Model Predictive Control, MPC）作为一种非常有效的控制方法被应用于车辆的横纵向控制中（例如自适应巡航、车道保持等等低级别自动驾驶功能，或高级别自动驾驶的主动换道、规划路径跟踪控制），不过目前不太清楚现在量产车的L2级别的自动驾驶的底层控制算法是否采用的是MPC还是传统的PID（前段时间在某车企的面试中，面试官提到了MPC算法在求解的时候由于涉及大规模的矩阵运算，故对计算性能要求较高等等问题）。<br>
+          <p>模型预测控制（Model Predictive Control, MPC）作为一种非常有效的控制方法被应用于车辆的横纵向控制中（例如自适应巡航、车道保持等等低级别自动驾驶功能，或高级别自动驾驶的主动换道、规划路径跟踪控制）等等，其可以很好地处理各种复杂的约束。<br>不过现在量产车的L2级别的自动驾驶的底层控制算法应该是使用的PID和LQR。前段时间在某车企的面试中，跟面试官讨论过一些关于MPC算法在求解的时候由于涉及大规模的矩阵运算，故对计算性能要求较高等问题，而当前量产L2级别的自动驾驶车辆并没有高性能的运算能力，不知道工业界是否会在具有更高运算能力的L3上使用MPC替代LQR+PID。<br>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2019/11/12/模型预测控制及其代码实现/#more" rel="contents">
@@ -1664,165 +1819,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/10/19/电池模型的状态空间方程/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="TAKU">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="TAKU'S">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/10/19/电池模型的状态空间方程/" itemprop="url">电池模型的状态空间方程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-19T19:10:56+08:00">
-                2017-10-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/电池管理系统/" itemprop="url" rel="index">
-                    <span itemprop="name">电池管理系统</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/2017/10/19/电池模型的状态空间方程/" class="leancloud_visitors" data-flag-title="电池模型的状态空间方程">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>之前学习如何使用卡尔曼滤波器进行电池SoC估计的时候，跳过了一个很重要的问题——电池模型系统方程的建立。电池模型的种类有很多，最常用的还是二阶RC电路模型。通过基本的电工学知识可以很容易地建立起电路的方程，得到输出电压与输入电流激励的关系。但是在使用卡尔曼滤波器进行SoC估算的时候，我们需要建立起关于这个电路模型的状态空间方程、并得到该方程的离散形式。</p>
-<h1 id="控制系统的分类"><a href="#控制系统的分类" class="headerlink" title="控制系统的分类"></a>控制系统的分类</h1><p>————————————————————————</p>
-<h2 id="连续系统与离散系统"><a href="#连续系统与离散系统" class="headerlink" title="连续系统与离散系统"></a>连续系统与离散系统</h2><p>控制系统可以分为连续系统和离散系统。一般研究中通过拉普拉斯变化或建立微分方程的方法，都是针对与连续控制系统。它所有变量的变化都是连续的。但是由于现今控制系统需要计算机参与计算。举个例子，当控制系统中某个变量需要通过传感器来测量时，只能是每间隔一个时间段来对传感器的数据进行采样。这样计算机处理的数据就不是一段连续的数据而是一串数据点，相应的也要将连续的系统方程进行离散化。<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/10/19/电池模型的状态空间方程/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1873,7 +1869,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1895,7 +1891,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-count">27</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

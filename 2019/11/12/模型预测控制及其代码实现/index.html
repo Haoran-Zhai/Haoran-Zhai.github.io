@@ -79,19 +79,19 @@
 
 
 
-<meta name="description" content="模型预测控制（Model Predictive Control, MPC）作为一种非常有效的控制方法被应用于车辆的横纵向控制中（例如自适应巡航、车道保持等等低级别自动驾驶功能，或高级别自动驾驶的主动换道、规划路径跟踪控制），不过目前不太清楚现在量产车的L2级别的自动驾驶的底层控制算法是否采用的是MPC还是传统的PID（">
+<meta name="description" content="模型预测控制（Model Predictive Control, MPC）作为一种非常有效的控制方法被应用于车辆的横纵向控制中（例如自适应巡航、车道保持等等低级别自动驾驶功能，或高级别自动驾驶的主动换道、规划路径跟踪控制）等等，其可以很好地处理各种复杂的约束。不过现在量产车的L2级别的自动驾驶的底层控制算法应该是使用的">
 <meta name="keywords" content="模型预测控制,车辆控制,自动驾驶">
 <meta property="og:type" content="article">
 <meta property="og:title" content="模型预测控制及其代码实现">
 <meta property="og:url" content="http://yoursite.com/2019/11/12/模型预测控制及其代码实现/index.html">
 <meta property="og:site_name" content="TAKU&#39;S">
-<meta property="og:description" content="模型预测控制（Model Predictive Control, MPC）作为一种非常有效的控制方法被应用于车辆的横纵向控制中（例如自适应巡航、车道保持等等低级别自动驾驶功能，或高级别自动驾驶的主动换道、规划路径跟踪控制），不过目前不太清楚现在量产车的L2级别的自动驾驶的底层控制算法是否采用的是MPC还是传统的PID（前段时间在某车企的面试中，面试官提到了MPC算法在求解的时候由于涉及大规模的矩阵">
+<meta property="og:description" content="模型预测控制（Model Predictive Control, MPC）作为一种非常有效的控制方法被应用于车辆的横纵向控制中（例如自适应巡航、车道保持等等低级别自动驾驶功能，或高级别自动驾驶的主动换道、规划路径跟踪控制）等等，其可以很好地处理各种复杂的约束。不过现在量产车的L2级别的自动驾驶的底层控制算法应该是使用的PID和LQR。前段时间在某车企的面试中，跟面试官讨论过一些关于MPC算法在求解">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/MPC/hhh.png">
-<meta property="og:updated_time" content="2019-12-05T09:47:29.324Z">
+<meta property="og:updated_time" content="2019-12-22T06:33:54.212Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="模型预测控制及其代码实现">
-<meta name="twitter:description" content="模型预测控制（Model Predictive Control, MPC）作为一种非常有效的控制方法被应用于车辆的横纵向控制中（例如自适应巡航、车道保持等等低级别自动驾驶功能，或高级别自动驾驶的主动换道、规划路径跟踪控制），不过目前不太清楚现在量产车的L2级别的自动驾驶的底层控制算法是否采用的是MPC还是传统的PID（前段时间在某车企的面试中，面试官提到了MPC算法在求解的时候由于涉及大规模的矩阵">
+<meta name="twitter:description" content="模型预测控制（Model Predictive Control, MPC）作为一种非常有效的控制方法被应用于车辆的横纵向控制中（例如自适应巡航、车道保持等等低级别自动驾驶功能，或高级别自动驾驶的主动换道、规划路径跟踪控制）等等，其可以很好地处理各种复杂的约束。不过现在量产车的L2级别的自动驾驶的底层控制算法应该是使用的PID和LQR。前段时间在某车企的面试中，跟面试官讨论过一些关于MPC算法在求解">
 <meta name="twitter:image" content="https://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/MPC/hhh.png">
 
 
@@ -365,7 +365,7 @@
       
 
       
-        <p>模型预测控制（Model Predictive Control, MPC）作为一种非常有效的控制方法被应用于车辆的横纵向控制中（例如自适应巡航、车道保持等等低级别自动驾驶功能，或高级别自动驾驶的主动换道、规划路径跟踪控制），不过目前不太清楚现在量产车的L2级别的自动驾驶的底层控制算法是否采用的是MPC还是传统的PID（前段时间在某车企的面试中，面试官提到了MPC算法在求解的时候由于涉及大规模的矩阵运算，故对计算性能要求较高等等问题）。<br><a id="more"></a><br>模型预测控制的原理倒不是很难理解，但是从前期的系统建模、到后期的运算求解，涉及的内容比较多，故对这方面的学习内容进行了总结整理。主要参考数目列在文章最后的参考文献中。</p>
+        <p>模型预测控制（Model Predictive Control, MPC）作为一种非常有效的控制方法被应用于车辆的横纵向控制中（例如自适应巡航、车道保持等等低级别自动驾驶功能，或高级别自动驾驶的主动换道、规划路径跟踪控制）等等，其可以很好地处理各种复杂的约束。<br>不过现在量产车的L2级别的自动驾驶的底层控制算法应该是使用的PID和LQR。前段时间在某车企的面试中，跟面试官讨论过一些关于MPC算法在求解的时候由于涉及大规模的矩阵运算，故对计算性能要求较高等问题，而当前量产L2级别的自动驾驶车辆并没有高性能的运算能力，不知道工业界是否会在具有更高运算能力的L3上使用MPC替代LQR+PID。<br><a id="more"></a><br>模型预测控制的原理倒不是很难理解，但是从前期的系统建模、到后期的运算求解，涉及的内容比较多，故对这方面的学习内容进行了总结整理。主要参考数目列在文章最后的参考文献中。</p>
 <h1 id="示例模型介绍"><a href="#示例模型介绍" class="headerlink" title="示例模型介绍"></a>示例模型介绍</h1><p>————————————————————————<br><img src="https://zhai-pic.oss-cn-shenzhen.aliyuncs.com/blog/MPC/hhh.png" alt="">示例为车辆轨迹跟踪控制中所使用的车辆运动学模型$\dot \xi  = f\left( {\xi ,u} \right)$，此模型比较简单，无需说明复杂的建模原理，且此模型为非线性模型，可以完整说明MPC是如何应用于车辆轨迹跟踪控制中的。根据车辆运动学原理可对运动建模如式（1）。<br>$$<br>\left[\begin{array}{c}{\dot{X}} \\ {\dot{Y}} \\ {\dot{\varphi}}\end{array}\right]=\left[\begin{array}{c}{\cos \varphi} \\ {\sin \varphi} \\ {\tan \delta_{f} / l}\end{array}\right] v<br>\tag{1} $$<br>确定模型的状态量为$\xi=\left[\begin{array}{lll}{X,} &amp; {Y,} &amp; {\varphi}\end{array}\right]^{T}$, 模型的控制量为前轮偏角$u=\left[\begin{array}{ll}{v,} &amp; {\delta_{f},}\end{array}\right]^{T}$。</p>
 <h1 id="非线性系统线性化方法"><a href="#非线性系统线性化方法" class="headerlink" title="非线性系统线性化方法"></a>非线性系统线性化方法</h1><p>————————————————————————<br>通过运动学建模知识得到的系统模型(1)为一个非线性系统，无法直接用于线性时变模型预测控制，所以若用于MPC的系统模型为非线性系统，需要首先进行非线性系统的线性化处理。泰勒展开作为一种被广泛运用的线性化方法，可以利用多项式很好地逼近非线性系统工作点处的真实值。<br>假设车辆参考系统在任意时刻的状态和控制量满足如下方程：<br>$$<br>\dot{\xi}_{ref}(k+1)=f\left(\xi_{ref}(k), u_{ref}\right)<br>\tag{2}$$<br>参考系统在工作点$\left( \xi_{ref},u_{ref} \right)$进行泰勒展开，忽略高阶项，只保留一阶项：<br>$$<br>\dot \xi  = f\left( \xi_{ref},u_{ref} \right) + {J_f}(\xi )\left( \xi  - {\xi _{ref}} \right) + {J_f}(u)\left( u - {u_{ref}} \right)<br>\tag{3}$$<br>${J_f}(\xi)$和${J_f}(u)$分别为f相对于$\xi$和$u$的雅可比矩阵。(3)-(2)则得到线性化之后的线性时变方程为：<br>$$<br>\dot {\tilde \xi}   = A(t)\tilde \xi (t) + B(t)\tilde u(t)<br>\tag{4} $$<br>式中：$ \tilde \xi (t) = \xi  - \xi_{ref},\quad \tilde u(t) = u - u_{ref} $, $A(t){\rm{ = }}{J_f}(\xi )$, $B(t){\rm{ = }}{J_f}(u)$<br>根据上述线性化方法，对式(1)分别对于$\xi $和$u$计算雅可比矩阵得：<br>$$<br>A=\left[\begin{array}{ccc}{0} &amp; {0} &amp; {-v \sin \varphi} \\ {0} &amp; {0} &amp; {v \cos \varphi} \\ {0} &amp; {0} &amp; {0}\end{array}\right], B=\left[\begin{array}{cc}{\cos \varphi} &amp; {0} \\ {\sin \varphi} &amp; {0} \\ {\frac{\tan \delta_{f}}{l}} &amp; {\frac{v}{l \cos ^{2} \delta_{f}}}\end{array}\right]<br>\tag{5}$$<br>（雅可比矩阵是一阶偏导数以一定方式排列成的矩阵：）<br>$$<br>\left[\begin{array}{ccc}{\frac{\partial y_{1}}{\partial x_{1}}} &amp; {\cdots} &amp; {\frac{\partial y_{1}}{\partial x_{n}}} \\ {\vdots} &amp; {\ddots} &amp; {\vdots} \\ {\frac{\partial y_{m}}{\partial x_{1}}} &amp; {\cdots} &amp; {\frac{\partial y_{m}}{\partial x_{n}}}\end{array}\right]<br>$$<br>即可得到线性化系统：<br>$$<br>\begin{aligned}<br>&amp;\left[\begin{array}{c}{\dot{x}-\dot{x}_{ref}} \\ {\dot{y}-\dot{y}_{ref}} \\ {\dot{\varphi}-\dot{\varphi}_{ref}}\end{array}\right]\\<br>=&amp;\left[\begin{array}{ccc}{0} &amp; {0} &amp; {-v \sin \varphi} \\ {0} &amp; {0} &amp; {v \cos \varphi} \\ {0} &amp; {0} &amp; {0}\end{array}\right]\left[\begin{array}{c}{x-x_{ref}} \\ {y-y_{ref}} \\ {\varphi-\varphi_{ref}}\end{array}\right]+\left[\begin{array}{cc}{\cos \varphi} &amp; {0} \\ {\sin \varphi} &amp; {0} \\ {\frac{\tan \delta_{r}}{l}} &amp; {\frac{v}{l \cos ^{2} \delta_{r}}}\end{array}\right]\left[\begin{array}{c}{v-v_{ref}} \\ {\delta_{f}-\delta_{ref}}\end{array}\right]<br>\end{aligned}<br>\tag{6}$$</p>
 <h1 id="模型离散化方法与代码实现"><a href="#模型离散化方法与代码实现" class="headerlink" title="模型离散化方法与代码实现"></a>模型离散化方法与代码实现</h1><p>————————————————————————<br>连续模型需要经过离散化才能应用于模型预测控制器的设计，模型离散化的方法有很多，比如Tustin法，欧拉法等等。MATLAB的c2d函数也可以直接将连续系统转换为离散系统。<br>Tustin法是通过采用梯形近似的方法实现离散等价设计，采用Tustin法离散化的结果为：<br>$$ \begin{array}{l}<br>A_{k,t} = (I + TA(t)/2)(I - TA(t)/2)^{ - 1}\\<br>B_{k,t} = TB(t)<br>\end{array} $$<br>欧拉法则使用矩形进行近似，相对于Tustin法形式更简单，即最后一个周期内$e(t)$所包围的面积使用$Te(k - 1)$代替。对于系统$\begin{array}{l}<br>\dot x = A(t)x + B(t)u\\<br>y = Cx<br>\end{array}$，采用欧拉法离散化的结果为：</p>
@@ -434,6 +434,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/12/09/图与最短路径算法/" rel="prev" title="图与最短路径算法">
+                图与最短路径算法 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -521,7 +525,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -543,7 +547,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-count">27</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
